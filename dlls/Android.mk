@@ -11,7 +11,7 @@ LOCAL_MODULE_FILENAME = libserver_hardfp
 endif
 
 LOCAL_CFLAGS += -w -D_LINUX -DCLIENT_WEAPONS -Dstricmp=strcasecmp -D_strnicmp=strncasecmp -Dstrnicmp=strncasecmp -D_snprintf=snprintf -D_stricmp=strcasecmp -D_vsnprintf=vsnprintf -D_strdup=strdup -D_write=write -D_close=close \
-	-fno-exceptions
+	-fno-exceptions -fvisibility=hidden
 	
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/. \
 		    $(LOCAL_PATH)/.. \

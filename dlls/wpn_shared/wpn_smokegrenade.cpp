@@ -81,7 +81,7 @@ void CSmokeGrenade::Holster(int skiplocal)
 
 void CSmokeGrenade::PrimaryAttack()
 {
-	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
+	if (m_pPlayer->HasShield())
 		return;
 
 	if (!m_flStartThrow && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] > 0)

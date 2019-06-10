@@ -80,10 +80,9 @@ void CHEGrenade::Holster(int skiplocal)
 
 void CHEGrenade::PrimaryAttack()
 {
-	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
-	{
+	if (m_pPlayer->HasShield())
 		return;
-	}
+
 	if (!m_flStartThrow && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] > 0)
 	{
 		m_flReleaseThrow = 0;
