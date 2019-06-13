@@ -124,9 +124,6 @@ void CC4::PrimaryAttack()
 		// player "arming bomb" animation
 		SendWeaponAnim(C4_ARM, UseDecrement() != FALSE);
 
-		// freeze the player in place while planting
-		SET_CLIENT_MAXSPEED(m_pPlayer->edict(), 1.0);
-
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 		m_pPlayer->SetProgressBarTime(C4_ARMING_ON_TIME);
 	}
