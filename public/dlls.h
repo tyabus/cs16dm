@@ -155,4 +155,3 @@
 #include "talkmonster.h"
 #include "animation.h"
 #include "shake.h"
-#include "csdm/way_ent.h"

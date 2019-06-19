@@ -749,8 +749,6 @@ void CLocalNav::Think()
 		flNextCvarCheck = gpGlobals->time + 1;
 	}
 
-	HostagePrethink();
-
 	float flElapsedTime = gpGlobals->time - flLastThinkTime;
 	nodeval -= flElapsedTime * 250;
 	flLastThinkTime = gpGlobals->time;
@@ -838,15 +836,4 @@ void CLocalNav::Reset()
 	qptr = 0;
 	nodeval = 0;
 	tot_hostages = 0;
-}
-
-void CLocalNav::HostagePrethink()
-{
-	for (int iCount = 0; iCount < tot_hostages; ++iCount)
-	{
-		if (hostages[ iCount ] != NULL)
-		{
-			GetClassPtr((CHostage *)hostages[ iCount ]->pev)->PreThink();
-		}
-	}
 }

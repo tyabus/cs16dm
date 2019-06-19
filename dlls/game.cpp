@@ -30,7 +30,6 @@ cvar_t sv_restart = { "sv_restart", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t limitteams = { "mp_limitteams", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t autoteambalance = { "mp_autoteambalance", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t tkpunish = { "mp_tkpunish", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t hostagepenalty = { "mp_hostagepenalty", "13", FCVAR_SERVER, 0.0f, NULL };
 cvar_t mirrordamage = { "mp_mirrordamage", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t logmessages = { "mp_logmessages", "1", FCVAR_SERVER, 0.0f, NULL };
 cvar_t forcecamera = { "mp_forcecamera", "0", FCVAR_SERVER, 0.0f, NULL };
@@ -157,7 +156,6 @@ void EXT_FUNC GameDLLInit()
     CVAR_REGISTER(&speed);
 	CVAR_REGISTER(&autoteambalance);
 	CVAR_REGISTER(&tkpunish);
-	CVAR_REGISTER(&hostagepenalty);
 	CVAR_REGISTER(&mirrordamage);
 	CVAR_REGISTER(&logmessages);
 	CVAR_REGISTER(&forcecamera);
@@ -179,5 +177,4 @@ void EXT_FUNC GameDLLInit()
 
 	Bot_RegisterCvars();
 	Tutor_RegisterCVars();
-	Hostage_RegisterCVars();
 }

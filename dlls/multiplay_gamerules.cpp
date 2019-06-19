@@ -1841,7 +1841,6 @@ void CHalfLifeMultiplay::RestartRound()
 			}
 		}
 
-		temp->RePosition();
 	}
 
 	// Scale up the loser bonus when teams fall into losing streaks

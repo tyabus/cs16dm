@@ -83,13 +83,7 @@ LOCAL_SRC_FILES := \
 	h_export.cpp \
 	hintmessage.cpp \
 	hostage/hostage.cpp \
-	hostage/hostage_improv.cpp \
 	hostage/hostage_localnav.cpp \
-	hostage/states/hostage_animate.cpp \
-	hostage/states/hostage_escape.cpp \
-	hostage/states/hostage_follow.cpp \
-	hostage/states/hostage_idle.cpp \
-	hostage/states/hostage_retreat.cpp \
 	items.cpp \
 	lights.cpp \
 	maprules.cpp \
@@ -148,7 +142,6 @@ LOCAL_SRC_FILES := \
 	wpn_shared/wpn_ump45.cpp \
 	wpn_shared/wpn_usp.cpp \
 	wpn_shared/wpn_xm1014.cpp \
-	csdm/way_ent.cpp \
 	../engine/unicode_strtools.cpp \
 	../game_shared/bot/bot.cpp \
 	../game_shared/bot/bot_manager.cpp \

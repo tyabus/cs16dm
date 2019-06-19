@@ -2972,56 +2972,6 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			}
 		}
 	}
-    else if(FStrEq(pcmd, "create_way_end"))
-    {
-        CBaseEntity *ent = NULL;
-        CWayEntEnd *start;
-
-        ent = UTIL_FindEntityByClassname(NULL, "way_end");
-
-        if(ent != NULL)
-        {
-           start->Remove((CWayEntEnd*)ent);
-        }
-
-        ent = CBaseEntity::Create("way_end", player->pev->origin + Vector(0,0,-36), player->pev->angles);
-    }
-    else if(FStrEq(pcmd, "create_way_start"))
-    {
-        CBaseEntity *ent = NULL;
-        CWayEntStart *start;
-
-        CVAR_SET_FLOAT("bots_dont_attack", 1);
-
-        ent = UTIL_FindEntityByClassname(NULL, "way_start");
-
-        if(ent != NULL)
-        {
-           start->Remove((CWayEntStart*)ent);
-        }
-
-        ent = CBaseEntity::Create("way_start", player->pev->origin + Vector(0,0,-36), player->pev->angles);
-    }
-    else if(FStrEq(pcmd, "remove_way_flags"))
-    {
-        CBaseEntity *ent = NULL;
-        CWayEntStart *start;
-
-        ent = UTIL_FindEntityByClassname(NULL, "way_start");
-
-        if(ent != NULL)
-        {
-           start->Remove((CWayEntStart*)ent);
-        }
-
-        ent = UTIL_FindEntityByClassname(NULL, "way_end");
-
-        if(ent != NULL)
-        {
-           start->Remove((CWayEntEnd*)ent);
-        }
-
-    }
 	else if (FStrEq(pcmd, "listmaps"))
 	{
 		if (gpGlobals->time >= player->m_flLastCommandTime[5])

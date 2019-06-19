@@ -6390,16 +6390,6 @@ void OLD_CheckBombTarget(CBasePlayer *player)
 	}
 }
 
-void OLD_CheckRescueZone(CBasePlayer *player)
-{
-	CBaseEntity *pSpot = NULL;
-	while ((pSpot = UTIL_FindEntityByClassname(pSpot, "info_hostage_rescue")) != NULL)
-	{
-		if ((pSpot->pev->origin - player->pev->origin).Length() <= 256.0f)
-			player->m_signals.Signal(SIGNAL_RESCUE);
-	}
-}
-
 void CBasePlayer::HandleSignals()
 {
 	CHalfLifeMultiplay *mp = g_pGameRules;
@@ -6413,7 +6403,7 @@ void CBasePlayer::HandleSignals()
 			OLD_CheckBombTarget(this);
 
 		if (!mp->m_bMapHasRescueZone)
-			OLD_CheckRescueZone(this);
+			mp->m_bMapHasRescueZone == TRUE;
 	}
 
 	int state = m_signals.GetSignal();

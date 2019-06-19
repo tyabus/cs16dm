@@ -84,46 +84,22 @@ enum HostageChatterType
 extern CHostageManager *g_pHostages;
 extern int g_iHostageNumber;
 
-extern cvar_t cv_hostage_debug;
-extern cvar_t cv_hostage_stop;
-
 // A Counter-Strike Hostage Simple
 
 class CHostage: public CBaseMonster
 {
 public:
 	virtual void Spawn();
-	virtual void Precache();
 	virtual int ObjectCaps();		// make hostage "useable"
 	virtual int Classify() { return CLASS_HUMAN_PASSIVE; }
 	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
 	virtual int BloodColor() { return BLOOD_COLOR_RED; }
-	virtual void Touch(CBaseEntity *pOther);
-	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-   
+
 public:
-	void EXPORT IdleThink();
-	void EXPORT Remove();
-	void RePosition();
 	void SetActivity(int act);
 	int GetActivity() { return m_Activity; }
 	float GetModifiedDamage(float flDamage, int nHitGroup);
-	void SetFlinchActivity();
-	void SetDeathActivity();
-	void PlayPainSound();
-	void PlayFollowRescueSound();
-	void AnnounceDeath(CBasePlayer *pAttacker);
-	void ApplyHostagePenalty(CBasePlayer *pAttacker);
-	void GiveCTTouchBonus(CBasePlayer *pPlayer);
-	void SendHostagePositionMsg();
-	void SendHostageEventMsg();
-	void DoFollow();
-	BOOL IsOnLadder();
-	void PointAt(const Vector &vecLoc);
-	void MoveToward(const Vector &vecLoc);
 	void NavReady();
-	void Wiggle();
-	void PreThink();
 
 	// queries
 	bool IsFollowingSomeone() { return IsFollowing(); }
