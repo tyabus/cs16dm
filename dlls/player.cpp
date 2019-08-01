@@ -1506,8 +1506,6 @@ void CBasePlayer::RemoveWeapons()
 
     pev->weapons &= ~WEAPON_ALLWEAPONS;
     GiveNamedItem("weapon_knife");
-    GiveNamedItem("weapon_hegrenade");
-    GiveNamedItem("weapon_flashbang");
     GiveNamedItem("weapon_smokegrenade");
 
 
@@ -1593,8 +1591,6 @@ void CBasePlayer::GiveDefaultItems()
     }
 
     GiveNamedItem("weapon_knife");
-    GiveNamedItem("weapon_hegrenade");
-    GiveNamedItem("weapon_flashbang");
     GiveNamedItem("weapon_smokegrenade");
 
 }

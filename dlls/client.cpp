@@ -3712,6 +3712,35 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			player->m_iMenu = Menu_ChooseTeam;
 		}
 	}
+	#if 0
+	else if (FStrEq(pcmd, "makemespec"))
+	{
+		if(player->m_iTeam == CT || (player->m_iTeam == TERRORIST))
+		{
+			MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+				WRITE_BYTE(player->entindex());
+				WRITE_STRING("SPECTATOR");
+			MESSAGE_END();
+			player->m_iTeam = SPECTATOR;
+			TeamChangeUpdate(player, player->m_iTeam);
+			player->pev->takedamage = DAMAGE_NO;
+			player->pev->effects = EF_NODRAW;
+			player->pev->solid = SOLID_NOT;
+		}
+		else if(player->m_iTeam == SPECTATOR)
+		{
+			MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+				WRITE_BYTE(player->entindex());
+				WRITE_STRING("SPECTATOR");
+			MESSAGE_END();
+			player->m_iTeam = CT;
+			TeamChangeUpdate(player, player->m_iTeam);
+			player->pev->takedamage = DAMAGE_YES;
+			player->pev->effects = 0;
+			player->pev->solid = SOLID_SLIDEBOX;
+		}
+	}
+	#endif
 	else if (FStrEq(pcmd, "showbriefing"))
 	{
 		if (player->m_iMenu == Menu_OFF)
