@@ -19,8 +19,6 @@ char *sPlayerModelFiles[] =
 	"models/player/sas/sas.mdl",
 	"models/player/terror/terror.mdl",
 	"models/player/urban/urban.mdl",
-	"models/player/spetsnaz/spetsnaz.mdl",	// CZ
-	"models/player/militia/militia.mdl"	// CZ
 };
 
 bool g_skipCareerInitialSpawn = false;
@@ -667,24 +665,6 @@ void Host_Say(edict_t *pEntity, int teamonly)
 	// team only
 	if (teamonly)
 	{
-		if (g_bIsCzeroGame && (player->m_iTeam == CT || player->m_iTeam == TERRORIST))
-		{
-			// search the place name where is located the player
-			Place playerPlace = TheNavAreaGrid.GetPlace(&player->pev->origin);
-			const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
-
-			FOR_EACH_LL((*placeList), it)
-			{
-				BotPhrase *phrase = (*placeList)[it];
-
-				if (phrase->GetID() == playerPlace)
-				{
-					placeName = phrase->GetName();
-					break;
-				}
-			}
-		}
-
 		if (player->m_iTeam == CT)
 		{
 			if (bSenderDead)
@@ -1051,11 +1031,6 @@ void BuyPistol(CBasePlayer *pPlayer, int iSlot)
 
 	pPlayer->GiveNamedItem(pszWeapon);
 	pPlayer->AddAccount(-iWeaponPrice);
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-	}
 }
 
 void BuyShotgun(CBasePlayer *pPlayer, int iSlot)
@@ -1112,11 +1087,6 @@ void BuyShotgun(CBasePlayer *pPlayer, int iSlot)
 
 	pPlayer->GiveNamedItem(pszWeapon);
 	pPlayer->AddAccount(-iWeaponPrice);
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-	}
 }
 
 void BuySubMachineGun(CBasePlayer *pPlayer, int iSlot)
@@ -1197,11 +1167,6 @@ void BuySubMachineGun(CBasePlayer *pPlayer, int iSlot)
 
 	pPlayer->GiveNamedItem(pszWeapon);
 	pPlayer->AddAccount(-iWeaponPrice);
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-	}
 }
 
 void BuyWeaponByWeaponID(CBasePlayer *pPlayer, WeaponIdType weaponID)
@@ -1245,11 +1210,6 @@ void BuyWeaponByWeaponID(CBasePlayer *pPlayer, WeaponIdType weaponID)
 
 	pPlayer->GiveNamedItem(info->entityName);
 	pPlayer->AddAccount(-info->cost);
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-	}
 }
 
 void BuyRifle(CBasePlayer *pPlayer, int iSlot)
@@ -1398,11 +1358,6 @@ void BuyRifle(CBasePlayer *pPlayer, int iSlot)
 
 	pPlayer->GiveNamedItem(pszWeapon);
 	pPlayer->AddAccount(-iWeaponPrice);
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-	}
 }
 
 void BuyMachineGun(CBasePlayer *pPlayer, int iSlot)
@@ -1441,11 +1396,6 @@ void BuyMachineGun(CBasePlayer *pPlayer, int iSlot)
 
 	pPlayer->GiveNamedItem(pszWeapon);
 	pPlayer->AddAccount(-iWeaponPrice);
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-	}
 }
 
 void BuyItem(CBasePlayer *pPlayer, int iSlot)
@@ -1743,17 +1693,12 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		pPlayer->GiveNamedItem(pszItem);
 		pPlayer->AddAccount(-iItemPrice);
 	}
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-	}
 }
 
 void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 {
 	CHalfLifeMultiplay *mp = g_pGameRules;
-	int numSkins = g_bIsCzeroGame ? CZ_NUM_SKIN : CS_NUM_SKIN;
+	int numSkins = CS_NUM_SKIN;
 
 	struct
 	{
@@ -1791,12 +1736,7 @@ void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 			appearance.model_name = "guerilla";
 			break;
 		case 5:
-			if (g_bIsCzeroGame)
-			{
-				appearance.model_id = MODEL_MILITIA;
-				appearance.model_name = "militia";
-				break;
-			}
+			break;
 		default:
 			if (TheBotProfiles->GetCustomSkinModelname(slot) && player->IsBot())
 			{
@@ -1840,12 +1780,7 @@ void HandleMenu_ChooseAppearance(CBasePlayer *player, int slot)
 			appearance.model_name = "gign";
 			break;
 		case 5:
-			if (g_bIsCzeroGame)
-			{
-				appearance.model_id = MODEL_SPETSNAZ;
-				appearance.model_name = "spetsnaz";
-				break;
-			}
+			break;
 		default:
 			if (TheBotProfiles->GetCustomSkinModelname(slot) && player->IsBot())
 			{
@@ -2194,17 +2129,11 @@ BOOL HandleMenu_ChooseTeam(CBasePlayer *player, int slot)
 		switch (team)
 		{
 		case CT:
-			if (g_bIsCzeroGame)
-				ShowVGUIMenu(player, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#CT_Select");
-			else
-				ShowVGUIMenu(player, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#CT_Select");
+			ShowVGUIMenu(player, VGUI_Menu_Class_CT, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#CT_Select");
 			break;
 
 		case TERRORIST:
-			if (g_bIsCzeroGame)
-				ShowVGUIMenu(player, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5 | MENU_KEY_6), "#Terrorist_Select");
-			else
-				ShowVGUIMenu(player, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#Terrorist_Select");
+			ShowVGUIMenu(player, VGUI_Menu_Class_T, (MENU_KEY_1 | MENU_KEY_2 | MENU_KEY_3 | MENU_KEY_4 | MENU_KEY_5), "#Terrorist_Select");
 			break;
 		}
 	}
@@ -2637,11 +2566,6 @@ BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 			{
 				while (BuyAmmo(pPlayer, PRIMARY_WEAPON_SLOT, false))
 					;
-
-				if (TheTutor != NULL)
-				{
-					TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-				}
 			}
 		}
 		// secondary ammo
@@ -2656,11 +2580,6 @@ BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 			{
 				while (BuyAmmo(pPlayer, PISTOL_SLOT, false))
 					;
-
-				if (TheTutor != NULL)
-				{
-					TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, pPlayer);
-				}
 			}
 		}
 		// equipment
@@ -3114,13 +3033,6 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			player->m_iMenu = Menu_ClientBuy;
 		}
 
-		if (player->m_signals.GetState() & SIGNAL_BUY)
-		{
-			if (TheTutor != NULL)
-			{
-				TheTutor->OnEvent(EVENT_TUTOR_BUY_MENU_OPENNED);
-			}
-		}
 		else
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, NULL, player->pev);
@@ -3264,11 +3176,6 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 								{
 									while (BuyAmmo(player, PRIMARY_WEAPON_SLOT, false))
 										;
-
-									if (TheTutor != NULL)
-									{
-										TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
-									}
 								}
 
 								player->BuildRebuyStruct();
@@ -3283,11 +3190,6 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 								{
 									while (BuyAmmo(player, PISTOL_SLOT, false))
 										;
-
-									if (TheTutor != NULL)
-									{
-										TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
-									}
 								}
 
 								player->BuildRebuyStruct();
@@ -4009,11 +3911,6 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 				{
 					BuyAmmo(player, PRIMARY_WEAPON_SLOT, true);
 					player->BuildRebuyStruct();
-
-					if (TheTutor != NULL)
-					{
-						TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
-					}
 				}
 			}
 			else if (FStrEq(pcmd, "buyammo2"))
@@ -4022,11 +3919,6 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 				{
 					BuyAmmo(player, PISTOL_SLOT, true);
 					player->BuildRebuyStruct();
-
-					if (TheTutor != NULL)
-					{
-						TheTutor->OnEvent(EVENT_PLAYER_BOUGHT_SOMETHING, player);
-					}
 				}
 			}
 			else if (FStrEq(pcmd, "buyequip"))
@@ -4351,11 +4243,6 @@ void EXT_FUNC StartFrame()
 	{
 		TheBots->StartFrame();
 	}
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->StartFrame(gpGlobals->time);
-	}
 }
 
 void ClientPrecache()
@@ -4472,29 +4359,13 @@ void ClientPrecache()
 	PRECACHE_SOUND("player/pl_pain4.wav");
 	PRECACHE_SOUND("player/pl_pain5.wav");
 	PRECACHE_SOUND("player/pl_pain6.wav");
-    PRECACHE_SOUND("player/pl_pain7.wav");
+	PRECACHE_SOUND("player/pl_pain7.wav");
 
 	int numPlayerModels;
-	if (g_bIsCzeroGame)
-		numPlayerModels = ARRAYSIZE(sPlayerModelFiles);
-	else
-		numPlayerModels = ARRAYSIZE(sPlayerModelFiles) - 2;
+	numPlayerModels = ARRAYSIZE(sPlayerModelFiles);
 
 	for (i = 0; i < numPlayerModels; ++i)
 		PRECACHE_MODEL(sPlayerModelFiles[i]);
-
-	if (g_bIsCzeroGame)
-	{
-		for (i = FirstCustomSkin; i <= LastCustomSkin; ++i)
-		{
-			const char *fname = TheBotProfiles->GetCustomSkinFname(i);
-
-			if (!fname)
-				break;
-
-			PRECACHE_MODEL((char *)fname);
-		}
-	}
 
 	PRECACHE_MODEL("models/p_ak47.mdl");
 	PRECACHE_MODEL("models/p_aug.mdl");
@@ -4548,19 +4419,6 @@ void ClientPrecache()
 	for (i = 0; i < numPlayerModels; ++i)
 		ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, sPlayerModelFiles[i]);
 
-	if (g_bIsCzeroGame)
-	{
-		for (i = FirstCustomSkin; i <= LastCustomSkin; ++i)
-		{
-			const char *fname = TheBotProfiles->GetCustomSkinFname(i);
-
-			if (!fname)
-				break;
-
-			ENGINE_FORCE_UNMODIFIED(force_model_specifybounds_if_avail, (float *)&vMin, (float *)&vMax, fname);
-		}
-	}
-
 	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/black_smoke1.spr");
 	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/black_smoke2.spr");
 	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/black_smoke3.spr");
@@ -4573,16 +4431,8 @@ void ClientPrecache()
 	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc_ne.tga");
 	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc_sw.tga");
 
-	if (g_bIsCzeroGame)
-	{
-		vMin = Vector(-13, -6, -22);
-		vMax = Vector(13, 6, 22);
-	}
-	else
-	{
-		vMin = Vector(-12, -6, -22);
-		vMax = Vector(12, 6, 22);
-	}
+	vMin = Vector(-12, -6, -22);
+	vMax = Vector(12, 6, 22);
 
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_deagle.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_p228.mdl");
@@ -4591,30 +4441,14 @@ void ClientPrecache()
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_fiveseven.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_glock18.mdl");
 
-	if (g_bIsCzeroGame)
-	{
-		vMin = Vector(-26, -19, -21);
-		vMax = Vector(26, 23, 21);
-	}
-	else
-	{
-		vMin = Vector(-25, -19, -21);
-		vMax = Vector(25, 23, 21);
-	}
+	vMin = Vector(-25, -19, -21);
+	vMax = Vector(25, 23, 21);
 
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_xm1014.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_m3.mdl");
 
-	if (g_bIsCzeroGame)
-	{
-		vMin = Vector(-23, -9, -20);
-		vMax = Vector(23, 17, 20);
-	}
-	else
-	{
-		vMin = Vector(-23, -8, -20);
-		vMax = Vector(23, 8, 20);
-	}
+	vMin = Vector(-23, -8, -20);
+	vMax = Vector(23, 8, 20);
 
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_mac10.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_mp5.mdl");
@@ -4622,16 +4456,8 @@ void ClientPrecache()
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_tmp.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_p90.mdl");
 
-	if (g_bIsCzeroGame)
-	{
-		vMin = Vector(-38, -33, -22);
-		vMax = Vector(38, 15, 35);
-	}
-	else
-	{
-		vMin = Vector(-31, -8, -21);
-		vMax = Vector(31, 12, 31);
-	}
+	vMin = Vector(-31, -8, -21);
+	vMax = Vector(31, 12, 31);
 
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_ak47.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_aug.mdl");
@@ -4644,16 +4470,8 @@ void ClientPrecache()
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_famas.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_galil.mdl");
 
-	if (g_bIsCzeroGame)
-	{
-		vMin = Vector(-30, -10, -20);
-		vMax = Vector(30, 11, 20);
-	}
-	else
-	{
-		vMin = Vector(-24, -10, -20);
-		vMax = Vector(25, 10, 20);
-	}
+	vMin = Vector(-24, -10, -20);
+	vMax = Vector(25, 10, 20);
 
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_m249.mdl");
 
@@ -4664,39 +4482,19 @@ void ClientPrecache()
 
 	vMin = Vector(-4, -8, -3);
 	vMax = Vector(3, 7, 3);
-
-	if (g_bIsCzeroGame)
-	{
-		vMin = Vector(-17, -8, -3);
-		vMax = Vector(17, 7, 3);
-	}
-	else
-	{
-		vMin = Vector(-4, -8, -3);
-		vMax = Vector(3, 7, 3);
-	}
+	vMin = Vector(-4, -8, -3);
+	vMax = Vector(3, 7, 3);
 
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/w_c4.mdl");
 
-	if (g_bIsCzeroGame)
-	{
-		vMin = Vector(-7, -3, -18);
-		vMax = Vector(7, 2, 18);
-	}
-	else
-	{
-		vMin = Vector(-7, -2, -18);
-		vMax = Vector(7, 2, 18);
-	}
+	vMin = Vector(-7, -2, -18);
+	vMax = Vector(7, 2, 18);
 
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_flashbang.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_hegrenade.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_smokegrenade.mdl");
 
-	if (g_bIsCzeroGame)
-		vMin = Vector(-5, -5, -7);
-	else
-		vMin = Vector(-5, -5, -5);
+	vMin = Vector(-5, -5, -5);
 
 	vMax = Vector(5, 5, 14);
 
@@ -4709,16 +4507,8 @@ void ClientPrecache()
 
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/p_knife.mdl");
 
-	if (g_bIsCzeroGame)
-	{
-		vMin = Vector(-21, -25, -54);
-		vMax = Vector(21, 23, 24);
-	}
-	else
-	{
-		vMin = Vector(-16, -8, -54);
-		vMax = Vector(16, 6, 24);
-	}
+	vMin = Vector(-16, -8, -54);
+	vMax = Vector(16, 6, 24);
 
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/shield/p_shield_deagle.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/shield/p_shield_fiveseven.mdl");
@@ -4767,27 +4557,10 @@ void ClientPrecache()
 	PRECACHE_GENERIC("sprites/scope_arc_sw.tga");
 
 	m_usResetDecals = g_engfuncs.pfnPrecacheEvent(1, "events/decal_reset.sc");
-
-	/*Vector temp = g_vecZero;
-	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc.tga");
-	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc_nw.tga");
-	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc_ne.tga");
-	ENGINE_FORCE_UNMODIFIED(force_exactfile, (float *)&temp, (float *)&temp, "sprites/scope_arc_sw.tga");
-
-
-	PRECACHE_GENERIC("sprites/scope_arc.tga");
-	PRECACHE_GENERIC("sprites/scope_arc_nw.tga");
-	PRECACHE_GENERIC("sprites/scope_arc_ne.tga");
-	PRECACHE_GENERIC("sprites/scope_arc_sw.tga");
-
-	m_usResetDecals = g_engfuncs.pfnPrecacheEvent(1, "events/decal_reset.sc");*/
 }
 
 const char *EXT_FUNC GetGameDescription()
 {
-	if (g_bIsCzeroGame)
-		return "Condition Zero";
-
 	return "Counter-Strike";
 }
 

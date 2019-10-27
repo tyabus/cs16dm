@@ -247,11 +247,6 @@ void CBotManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity 
 		bot->OnEvent(event, entity, other);
 	}
 
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(event, entity, other);
-	}
-
 	if (g_pHostages != NULL)
 	{
 		g_pHostages->OnEvent(event, entity, other);

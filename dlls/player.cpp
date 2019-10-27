@@ -395,12 +395,6 @@ void CBasePlayer::SetPlayerModel(BOOL HasC4)
 		case MODEL_VIP:
 			model = "vip";
 			break;
-		case MODEL_SPETSNAZ:
-			if (g_bIsCzeroGame)
-			{
-				model = "spetsnaz";
-				break;
-			}
 		default:
 		{
 			if (IsBot())
@@ -432,12 +426,6 @@ void CBasePlayer::SetPlayerModel(BOOL HasC4)
 		case MODEL_GUERILLA:
 			model = "guerilla";
 			break;
-		case MODEL_MILITIA:
-			if (g_bIsCzeroGame)
-			{
-				model = "militia";
-				break;
-			}
 		default:
 		{
 			if (IsBot())
@@ -576,22 +564,7 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 				{
 					// search the place name where is located the player
 					const char *placeName = NULL;
-					if (g_bIsCzeroGame && TheBotPhrases != NULL)
-					{
-						Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
-						const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
 
-						FOR_EACH_LL ((*placeList), it)
-						{
-							const BotPhrase *phrase = (*placeList)[it];
-
-							if (phrase->GetID() == playerPlace)
-							{
-								placeName = phrase->GetName();
-								break;
-							}
-						}
-					}
 					if (placeName != NULL)
 						ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio_location", STRING(pev->netname), placeName, msg_verbose);
 					else
@@ -1475,10 +1448,6 @@ void CBasePlayer::PackDeadPlayerItems()
 						}
 					}
 				}
-				// drop a grenade after death
-				else if (pPlayerItem->iItemSlot() == GRENADE_SLOT && g_bIsCzeroGame)
-					packPlayerItem(this, pPlayerItem, true);
-
 				pPlayerItem = pPlayerItem->m_pNext;
 			}
 		}
@@ -3208,19 +3177,8 @@ void CBasePlayer::SyncRoundTimer()
 	if (tmRemaining < 0)
 		tmRemaining = 0;
 
-    /*MESSAGE_BEGIN(MSG_ONE, gmsgRoundTime, NULL, pev);
-		WRITE_SHORT((int)tmRemaining);
-    MESSAGE_END();*/
-
 	if (!mp->IsMultiplayer())
 		return;
-
-	if (mp->IsFreezePeriod() && TheTutor != NULL && !IsObserver())
-	{
-		MESSAGE_BEGIN(MSG_ONE, gmsgBlinkAcct, NULL, pev);
-			WRITE_BYTE(MONEY_BLINK_AMOUNT);
-		MESSAGE_END();
-	}
 
 	if (TheCareerTasks != NULL && mp->IsCareer())
 	{
@@ -3876,7 +3834,6 @@ void CBasePlayer::PlayerUse()
 		}
 	}
 
-	bool useNewHostages = g_bIsCzeroGame && TheNavAreaList.Count();
 	CBaseEntity *pObject = NULL;
 	CBaseEntity *pClosest = NULL;
 	Vector vecLOS;
@@ -3885,44 +3842,6 @@ void CBasePlayer::PlayerUse()
 
 	// so we know which way we are facing
 	UTIL_MakeVectors(pev->v_angle);
-
-	if (useNewHostages)
-	{
-		TraceResult result;
-		const float useHostageRange = 1000.0f;
-
-		Vector vecStart = pev->origin + pev->view_ofs;
-		Vector vecEnd = vecStart + gpGlobals->v_forward * useHostageRange;
-
-		UTIL_TraceLine(vecStart, vecEnd, dont_ignore_monsters, edict(), &result);
-
-		if (result.flFraction < 1.0f)
-		{
-			CBaseEntity *hit = Instance(result.pHit);
-			if (hit != NULL && FClassnameIs(hit->pev, "hostage_entity") && CanSeeUseable(this, hit))
-				pClosest = hit;
-		}
-
-		if (!pClosest)
-		{
-			while ((pObject = UTIL_FindEntityInSphere(pObject, pev->origin, useHostageRange)) != NULL)
-			{
-				if (!FClassnameIs(pObject->pev, "hostage_entity"))
-					continue;
-
-				vecLOS = VecBModelOrigin(pObject->pev) - vecStart;
-				vecLOS.NormalizeInPlace();
-
-				flDot = DotProduct(vecLOS, gpGlobals->v_forward);
-
-				if (flDot > flMaxDot && CanSeeUseable(this, pObject))
-				{
-					pClosest = pObject;
-					flMaxDot = flDot;
-				}
-			}
-		}
-	}
 
 	if (!pClosest)
 	{
@@ -3953,7 +3872,7 @@ void CBasePlayer::PlayerUse()
 	// Found an object
 	if (pObject != NULL)
 	{
-		if (!useNewHostages || CanSeeUseable(this, pObject))
+		if (CanSeeUseable(this, pObject))
 		{
 			// TODO: traceline here to prevent +USEing buttons through walls
 			int caps = pObject->ObjectCaps();
@@ -4198,57 +4117,6 @@ bool CBasePlayer::CanPlayerBuy(bool display)
 	return true;
 }
 
-/*void Bhop(float frametime, struct usercmd_s *cmd)
-{
-    static bool bhop_standup_state = 0;
-
-    static bool lastFramePressedJump=false;
-    static bool JumpInNextFrame=false;
-    int curFramePressedJump  =cmd->buttons & IN_JUMP;
-
-    if(JumpInNextFrame)
-    {
-        JumpInNextFrame=false;
-        cmd->buttons|=IN_JUMP;
-        goto bhopfuncend;
-    }
-    static int inAirBhopCnt=0;bool isJumped=false;
-
-    if (curFramePressedJump)
-    {
-        cmd->buttons &= ~IN_JUMP;
-        if( ((!lastFramePressedJump)|| g_Local.iFlags&FL_ONGROUND || g_Local.iWaterLevel >= 2 || g_Local.fOnLadder==1 || g_Local.flHeight<=2))
-        {
-            if(true)
-            {
-                static int bhop_jump_number=0;
-                bhop_jump_number++;
-                if(bhop_jump_number>=20)
-                {
-                    bhop_jump_number=0;
-                    JumpInNextFrame=true;
-                    goto bhopfuncend;
-                }
-            }
-            {
-                inAirBhopCnt=4;isJumped=true;
-                cmd->buttons |= IN_JUMP;
-            }
-        }
-    }
-    if(!isJumped)
-    {
-        if(inAirBhopCnt>0)
-        {
-            if(inAirBhopCnt%2==0) {cmd->buttons |= IN_JUMP;}
-            else cmd->buttons &= ~IN_JUMP;
-            inAirBhopCnt--;
-        }
-    }
-bhopfuncend:
-    lastFramePressedJump=curFramePressedJump;
-}
-*/
 float m_speed;
 
 void CBasePlayer::PreThink()
@@ -4475,7 +4343,7 @@ void CBasePlayer::PreThink()
 	{
 		// If on a ladder, jump off the ladder
 		// else Jump
-        if(CVAR_GET_FLOAT("sv_bhop") == 0)
+        if(CVAR_GET_FLOAT("mp_bhop") == 0)
         {
             Jump();
         }
@@ -4502,7 +4370,7 @@ void CBasePlayer::PreThink()
 		Duck();
 	}
 
-    if (!(pev->flags & FL_ONGROUND) && (CVAR_GET_FLOAT("sv_bhop") == 0))
+    if (!(pev->flags & FL_ONGROUND) && (CVAR_GET_FLOAT("mp_bhop") == 0))
     {
         m_flFallVelocity = -pev->velocity.z;
 	}
@@ -6701,9 +6569,6 @@ void CBasePlayer::SendHostageIcons()
 	int numHostages = 0;
 	char buf[16];
 
-	if (!g_bIsCzeroGame)
-		return;
-
 	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")) != NULL)
 	{
 		if (pHostage && pHostage->pev->deadflag == DEAD_NO)
@@ -7624,13 +7489,6 @@ void CBasePlayer::SwitchTeam()
 			m_iModelName = MODEL_ARCTIC;
 			SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "arctic");
 			break;
-		case MODEL_SPETSNAZ:
-			if (g_bIsCzeroGame)
-			{
-				m_iModelName = MODEL_MILITIA;
-				SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "militia");
-				break;
-			}
 		default:
 			if (m_iModelName == MODEL_GSG9 || !IsBot() || !TheBotProfiles->GetCustomSkinModelname(m_iModelName))
 			{
@@ -7660,14 +7518,6 @@ void CBasePlayer::SwitchTeam()
 			m_iModelName = MODEL_GIGN;
 			SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "gign");
 			break;
-
-		case MODEL_MILITIA:
-			if (g_bIsCzeroGame)
-			{
-				m_iModelName = MODEL_SPETSNAZ;
-				SET_CLIENT_KEY_VALUE(entindex(), GET_INFO_BUFFER(edict()), "model", "spetsnaz");
-				break;
-			}
 		default:
 			if (m_iModelName == MODEL_LEET || !IsBot() || !TheBotProfiles->GetCustomSkinModelname(m_iModelName))
 			{
@@ -8253,11 +8103,6 @@ void CBasePlayer::SpawnClientSideCorpse()
 	MESSAGE_END();
 
 	m_canSwitchObserverModes = true;
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_CLIENT_CORPSE_SPAWNED, this);
-	}
 }
 
 BOOL CBasePlayer::IsArmored(int nHitGroup)
@@ -8609,11 +8454,6 @@ void CBasePlayer::AutoBuy()
 	if (c != NULL)
 	{
 		ParseAutoBuyString(c, boughtPrimary, boughtSecondary);
-	}
-
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_LEFT_BUY_ZONE);
 	}
 }
 
@@ -9218,13 +9058,6 @@ void CBasePlayer::Rebuy()
 	}
 
 	m_bIsInRebuy = false;
-
-	// after we're done buying, the user is done with their equipment purchasing experience.
-	// so we are effectively out of the buy zone.
-	if (TheTutor != NULL)
-	{
-		TheTutor->OnEvent(EVENT_PLAYER_LEFT_BUY_ZONE);
-	}
 }
 
 void CBasePlayer::RebuyPrimaryWeapon()
@@ -9363,24 +9196,6 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 		return;
 
 	const char *placeName = "";
-
-	if (pev->deadflag == DEAD_NO && g_bIsCzeroGame)
-	{
-		// search the place name where is located the player
-		Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
-		const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
-
-		FOR_EACH_LL ((*placeList), it)
-		{
-			BotPhrase *phrase = (*placeList)[it];
-
-			if (phrase->GetID() == playerPlace)
-			{
-				placeName = phrase->GetName();
-				break;
-			}
-		}
-	}
 
 	if (!placeName[0] || (m_lastLocation[0] && !Q_strcmp(placeName, &m_lastLocation[1])))
 	{

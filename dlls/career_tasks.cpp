@@ -339,11 +339,6 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 			WRITE_BYTE(m_id);
 		MESSAGE_END();
 
-		if (TheTutor != NULL)
-		{
-			TheTutor->OnEvent(EVENT_CAREER_TASK_DONE);
-		}
-
 		UTIL_LogPrintf("Career Task Done %d\n", m_id);
 
 		if (m_event == EVENT_ROUND_WIN && !Q_strcmp(m_name, "winfast"))
@@ -382,11 +377,6 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 				{
 					TheCareerTasks->SetFinishedTaskTime((int)TheCareerTasks->GetRoundElapsedTime());
 					UTIL_GetLocalPlayer()->SyncRoundTimer();
-				}
-
-				if (TheTutor != NULL)
-				{
-					TheTutor->OnEvent(EVENT_CAREER_TASK_DONE);
 				}
 			}
 

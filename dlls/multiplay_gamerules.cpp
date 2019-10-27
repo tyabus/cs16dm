@@ -56,11 +56,6 @@ void SV_Continue_f()
 	}
 }
 
-void SV_Tutor_Toggle_f()
-{
-	CVAR_SET_FLOAT("tutor_enable", (CVAR_GET_FLOAT("tutor_enable") <= 0.0));
-}
-
 void SV_Career_Restart_f()
 {
 	CHalfLifeMultiplay *mp = g_pGameRules;
@@ -524,15 +519,6 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 
 	if (!installedCommands)
 	{
-		if (g_bIsCzeroGame)
-		{
-			ADD_SERVER_COMMAND("career_continue", SV_Continue_f);
-			ADD_SERVER_COMMAND("career_matchlimit", SV_CareerMatchLimit_f);
-			ADD_SERVER_COMMAND("career_add_task", SV_CareerAddTask_f);
-			ADD_SERVER_COMMAND("career_endround", SV_Career_EndRound_f);
-			ADD_SERVER_COMMAND("career_restart", SV_Career_Restart_f);
-			ADD_SERVER_COMMAND("tutor_toggle", SV_Tutor_Toggle_f);
-		}
 		ADD_SERVER_COMMAND("perf_test", loopPerformance);
 		ADD_SERVER_COMMAND("print_ent", printEntities);
 
@@ -553,9 +539,6 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	}
 
 	sv_clienttrace = CVAR_GET_POINTER("sv_clienttrace");
-
-	if (g_bIsCzeroGame)
-		InstallTutor(CVAR_GET_FLOAT("tutor_enable") != 0.0f);
 
 	g_pMPGameRules = this;
 }
@@ -2184,7 +2167,7 @@ bool CHalfLifeMultiplay::AddToVIPQueue(CBasePlayer *toAdd)
 void CHalfLifeMultiplay::ResetCurrentVIP()
 {
 	char *infobuffer = GET_INFO_BUFFER(m_pVIP->edict());
-	int numSkins = g_bIsCzeroGame ? CZ_NUM_SKIN : CS_NUM_SKIN;
+	int numSkins = CS_NUM_SKIN;
 
 	switch (RANDOM_LONG(0, numSkins))
 	{
@@ -2201,12 +2184,7 @@ void CHalfLifeMultiplay::ResetCurrentVIP()
 		SET_CLIENT_KEY_VALUE(m_pVIP->entindex(), infobuffer, "model", "gign");
 		break;
 	case 4:
-		if (g_bIsCzeroGame)
-		{
-			m_pVIP->m_iModelName = MODEL_SPETSNAZ;
-			SET_CLIENT_KEY_VALUE(m_pVIP->entindex(), infobuffer, "model", "spetsnaz");
-			break;
-		}
+		break;
 	default:
 		m_pVIP->m_iModelName = MODEL_URBAN;
 		SET_CLIENT_KEY_VALUE(m_pVIP->entindex(), infobuffer, "model", "urban");
@@ -2317,8 +2295,6 @@ void CHalfLifeMultiplay::PickNextVIP()
 
 void CHalfLifeMultiplay::Think()
 {
-	MonitorTutorStatus();
-
 	m_VoiceGameMgr.Update(gpGlobals->frametime);
 
 	if (sv_clienttrace->value != 1.0f)
@@ -2462,11 +2438,6 @@ void CHalfLifeMultiplay::Think()
 
 					m_fCareerRoundMenuTime = 0;
 				}
-			}
-
-			if (TheTutor != NULL)
-			{
-				TheTutor->PurgeMessages();
 			}
 		}
 
@@ -3726,15 +3697,12 @@ void CHalfLifeMultiplay::DeathNotice(CBasePlayer *pVictim, entvars_t *pKiller, e
 	if (pVictim->m_bHeadshotKilled)
 		iGotHeadshot = 1;
 
-	if (TheTutor == NULL)
-	{
 		MESSAGE_BEGIN(MSG_ALL, gmsgDeathMsg);
 			WRITE_BYTE(killer_index);			// the killer
 			WRITE_BYTE(ENTINDEX(pVictim->edict()));		// the victim
 			WRITE_BYTE(iGotHeadshot);			// is killed headshot
 			WRITE_STRING(killer_weapon_name);		// what they were killed by (should this be a string?)
 		MESSAGE_END();
-	}
 
 	// replace the code names with the 'real' names
 	if (!Q_strcmp(killer_weapon_name, "egon"))

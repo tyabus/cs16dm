@@ -417,11 +417,6 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 
 	if (phraseDataFile == NULL)
 	{
-		if (g_bEnableCSBot)
-		{
-			CONSOLE_ECHO("WARNING: Cannot access bot phrase database '%s'\n", filename);
-		}
-
 		return false;
 	}
 

@@ -1150,9 +1150,6 @@ CGrenade *CGrenade::ShootSmokeGrenade(entvars_t *pevOwner, Vector vecStart, Vect
 
 void AnnounceFlashInterval(float interval, float offset)
 {
-	if (!g_bIsCzeroGame)
-		return;
-
 	MESSAGE_BEGIN(MSG_ALL, gmsgScenarioIcon);
 		WRITE_BYTE(1);
 		WRITE_STRING("bombticking");

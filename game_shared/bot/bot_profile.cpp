@@ -85,11 +85,6 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 
 	if (dataFile == NULL)
 	{
-		if (g_bEnableCSBot)
-		{
-			CONSOLE_ECHO("WARNING: Cannot access bot profile database '%s'\n", filename);
-		}
-
 		return;
 	}
 

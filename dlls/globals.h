@@ -39,7 +39,5 @@ extern Vector g_vecAttackDir;
 extern int g_iSkillLevel;
 extern int gDisplayTitle;
 extern BOOL g_fGameOver;
-extern bool g_bIsCzeroGame;
-extern bool g_bEnableCSBot;
 
 #endif // GLOBALS_H

@@ -55,7 +55,7 @@ cvar_t swap = { "swap_spawnpoints", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t speed = { "speed_graph", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t rands = { "rand_spawn", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t spawns = {"max_rand_spawns", "32", FCVAR_SERVER, 0.0f, NULL };
-cvar_t bhop = { "sv_bhop", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t bhop = { "mp_bhop", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t trbullet = { "trace_bullets", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t bots_dont_attack = { "bots_dont_attack", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t botspeed = {"bots_speed", "0", FCVAR_SERVER, 0.0f, NULL };
@@ -108,9 +108,6 @@ cvar_t sk_scientist_heal3 = { "sk_scientist_heal3", "0", 0, 0.0f, NULL };
 
 void EXT_FUNC GameDLLInit()
 {
-	g_bIsCzeroGame = UTIL_IsGame("czero");
-   g_bEnableCSBot = g_bIsCzeroGame || ENG_CHECK_PARM ("-bots", NULL) != 0;
-
 	g_psv_gravity = CVAR_GET_POINTER("sv_gravity");
 	g_psv_aim = CVAR_GET_POINTER("sv_aim");
 	g_footsteps = CVAR_GET_POINTER("mp_footsteps");
@@ -153,7 +150,7 @@ void EXT_FUNC GameDLLInit()
 
 	/*************************/
 	CVAR_REGISTER(&limitteams);
-    CVAR_REGISTER(&speed);
+	CVAR_REGISTER(&speed);
 	CVAR_REGISTER(&autoteambalance);
 	CVAR_REGISTER(&tkpunish);
 	CVAR_REGISTER(&mirrordamage);
@@ -174,7 +171,4 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&fragsleft);
 	CVAR_REGISTER(&timeleft);
 	CVAR_REGISTER(&humans_join_team);
-
-	Bot_RegisterCvars();
-	Tutor_RegisterCVars();
 }

@@ -149,37 +149,21 @@ void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars
 
 void EjectBrass(const Vector &vecOrigin, const Vector &vecLeft, const Vector &vecVelocity, float rotation, int model, int soundtype, int entityIndex)
 {
-	//CBaseEntity *ent = UTIL_PlayerByIndex(entityIndex);	// unused
-	bool useNewBehavior = g_bIsCzeroGame;
-
 	MESSAGE_BEGIN(MSG_PVS, gmsgBrass, vecOrigin);
-		if (!useNewBehavior)
-		{
-			// noxref
-			WRITE_BYTE(TE_MODEL);
-		}
+		WRITE_BYTE(TE_MODEL);
 		WRITE_COORD(vecOrigin.x);	// origin
 		WRITE_COORD(vecOrigin.y);
 		WRITE_COORD(vecOrigin.z);
-		if (!useNewBehavior)
-		{
-			// noxref
-			// it parses the client side, but does not use it
-			WRITE_COORD(vecLeft.x);
-			WRITE_COORD(vecLeft.y);
-			WRITE_COORD(vecLeft.z);
-		}
+		WRITE_COORD(vecLeft.x);
+		WRITE_COORD(vecLeft.y);
+		WRITE_COORD(vecLeft.z);
 		WRITE_COORD(vecVelocity.x);	// velocity
 		WRITE_COORD(vecVelocity.y);
 		WRITE_COORD(vecVelocity.z);
 		WRITE_ANGLE(rotation);
 		WRITE_SHORT(model);
 		WRITE_BYTE(soundtype);
-		if (!useNewBehavior)
-		{
-			// noxref
-			WRITE_BYTE(25);// 2.5 seconds
-		}
+		WRITE_BYTE(25);			// 2.5 seconds
 		WRITE_BYTE(entityIndex);
 	MESSAGE_END();
 }

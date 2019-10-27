@@ -55,42 +55,6 @@ void Bot_ServerCommand()
 	}
 }
 
-void Bot_RegisterCvars()
-{
-   if (g_bEnableCSBot)
-   {
-      CVAR_REGISTER (&cv_bot_traceview);
-      CVAR_REGISTER (&cv_bot_stop);
-      CVAR_REGISTER (&cv_bot_show_nav);
-      CVAR_REGISTER (&cv_bot_show_danger);
-      CVAR_REGISTER (&cv_bot_nav_edit);
-      CVAR_REGISTER (&cv_bot_nav_zdraw);
-      CVAR_REGISTER (&cv_bot_walk);
-      CVAR_REGISTER (&cv_bot_difficulty);
-      CVAR_REGISTER (&cv_bot_debug);
-      CVAR_REGISTER (&cv_bot_quicksave);
-      CVAR_REGISTER (&cv_bot_quota);
-      CVAR_REGISTER (&cv_bot_quota_match);
-      CVAR_REGISTER (&cv_bot_prefix);
-      CVAR_REGISTER (&cv_bot_allow_rogues);
-      CVAR_REGISTER (&cv_bot_allow_pistols);
-      CVAR_REGISTER (&cv_bot_allow_shotguns);
-      CVAR_REGISTER (&cv_bot_allow_sub_machine_guns);
-      CVAR_REGISTER (&cv_bot_allow_rifles);
-      CVAR_REGISTER (&cv_bot_allow_machine_guns);
-      CVAR_REGISTER (&cv_bot_allow_grenades);
-      CVAR_REGISTER (&cv_bot_allow_snipers);
-      CVAR_REGISTER (&cv_bot_allow_shield);
-      CVAR_REGISTER (&cv_bot_join_team);
-      CVAR_REGISTER (&cv_bot_join_after_player);
-      CVAR_REGISTER (&cv_bot_auto_vacate);
-      CVAR_REGISTER (&cv_bot_zombie);
-      CVAR_REGISTER (&cv_bot_defer_to_human);
-      CVAR_REGISTER (&cv_bot_chatter);
-      CVAR_REGISTER (&cv_bot_profile_db);
-   }
-}
-
 // Constructor
 
 CCSBot::CCSBot() : m_chatter(this), m_gameState(this)

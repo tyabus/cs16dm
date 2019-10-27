@@ -103,11 +103,6 @@ LOCAL_SRC_FILES := \
 	subs.cpp \
 	training_gamerules.cpp \
 	triggers.cpp \
-	tutor_base_states.cpp \
-	tutor_base_tutor.cpp \
-	tutor.cpp \
-	tutor_cs_states.cpp \
-	tutor_cs_tutor.cpp \
 	util.cpp \
 	vehicle.cpp \
 	weapons.cpp \
