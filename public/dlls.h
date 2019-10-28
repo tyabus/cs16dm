@@ -120,14 +120,11 @@
 #include "game_shared/bot/nav_file.h"
 #include "game_shared/bot/nav_path.h"
 
+#include "csdm/stub.h"
 #include "airtank.h"
 #include "h_ai.h"
 #include "h_cycler.h"
 #include "h_battery.h"
-
-// Hostage
-#include "hostage/hostage.h"
-#include "hostage/hostage_localnav.h"
 
 #include "bot/cs_bot.h"
 
@@ -138,7 +135,6 @@
 #include "explode.h"
 #include "gamerules.h"
 #include "career_tasks.h"
-#include "training_gamerules.h"
 #include "maprules.h"
 #include "monsterevent.h"
 #include "plane.h"

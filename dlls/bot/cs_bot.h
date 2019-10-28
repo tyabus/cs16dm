@@ -217,7 +217,7 @@ public:
 	virtual void OnUpdate(CCSBot *me);
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "Hide"; }
-   
+
 public:
 	void SetHidingSpot(const Vector &pos)	{ m_hidingSpot = pos; }
 	const Vector &GetHidingSpot() const	{ return m_hidingSpot; }
@@ -262,7 +262,7 @@ public:
 	virtual void OnUpdate(CCSBot *me);
 	virtual void OnExit(CCSBot *me);
 	virtual const char *GetName() const { return "Follow"; }
-   
+
 	void SetLeader(CBaseEntity *leader) { m_leader = leader; }
 
 private:
@@ -664,7 +664,6 @@ public:
 
 	int GetHostageEscortCount() const;
 	void IncreaseHostageEscortCount();
-	float GetRangeToFarthestEscortedHostage() const;
 	void ResetWaitForHostagePatience();
 	void ResetValues();							// reset internal data to initial state
 	void BotDeathThink();
@@ -1500,56 +1499,6 @@ public:
 	const Vector *m_spot[ MAX_SPOTS ];
 	int m_count;
 };
-
-class FarthestHostage
-{
-public:
-	FarthestHostage(const CCSBot *me)
-	{
-		m_me = me;
-		m_farRange = -1.0f;
-	}
-	bool operator()(CHostage *hostage)
-	{
-		if (hostage->IsFollowing(m_me))
-		{
-			float range = (hostage->Center() - m_me->pev->origin).Length();
-
-			if (range > m_farRange)
-			{
-				m_farRange = range;
-			}
-		}
-
-		return true;
-
-		/*if (hostage->pev->takedamage != DAMAGE_YES)
-			return true;
-
-		if (hostage->m_improv != NULL)
-		{
-			if (!hostage->IsFollowingSomeone() || m_me != hostage->GetLeader())
-				return true;
-		}
-		else if (!hostage->IsFollowing(m_me))
-			return true;
-
-		float range = (hostage->Center() - m_me->pev->origin).Length();
-
-		if (range > m_farRange)
-		{
-			m_farRange = range;
-		}
-
-		return true;*/
-	}
-
-	const CCSBot *m_me;
-	float m_farRange;
-};
-
-// Functor used with NavAreaBuildPath()
-
 class PathCost
 {
 public:

@@ -1711,27 +1711,6 @@ void CBombTarget::BombTargetUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 	SUB_UseTargets(NULL, USE_TOGGLE, 0);
 }
 
-LINK_ENTITY_TO_CLASS(func_hostage_rescue, CHostageRescue);
-
-void CHostageRescue::Spawn()
-{
-	InitTrigger();
-	SetTouch(&CHostageRescue::HostageRescueTouch);
-}
-
-void CHostageRescue::HostageRescueTouch(CBaseEntity *pOther)
-{
-	if (pOther->IsPlayer())
-	{
-		((CBasePlayer *)pOther)->m_signals.Signal(SIGNAL_RESCUE);
-	}
-
-	if (FClassnameIs(pOther->pev, "hostage_entity"))
-	{
-		((CHostage *)pOther)->m_bRescueMe = TRUE;
-	}
-}
-
 LINK_ENTITY_TO_CLASS(func_escapezone, CEscapeZone);
 
 void CEscapeZone::Spawn()

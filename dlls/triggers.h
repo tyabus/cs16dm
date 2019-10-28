@@ -395,15 +395,6 @@ public:
 	void EXPORT BombTargetUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 };
 
-class CHostageRescue: public CBaseTrigger
-{
-public:
-	virtual void Spawn();
-
-public:
-	void EXPORT HostageRescueTouch(CBaseEntity *pOther);
-};
-
 class CEscapeZone: public CBaseTrigger
 {
 public:

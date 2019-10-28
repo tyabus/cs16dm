@@ -159,29 +159,6 @@ void CCareerTask::OnWeaponKill(int weaponId, int weaponClassId, bool headshot, b
 		return;
 	}
 
-	if (m_rescuer)
-	{
-		int hostages_ = 0;
-		CBaseEntity *hostageEntity = NULL;
-
-		while ((hostageEntity = UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")) != NULL)
-		{
-			if (hostageEntity->pev->takedamage != DAMAGE_YES)
-				continue;
-
-			CHostage *hostage = static_cast<CHostage *>(hostageEntity);
-
-			if (!hostage->IsFollowingSomeone())
-				continue;
-
-			if (hostage->IsValid() && hostage->m_target == pAttacker)
-				++hostages_;
-		}
-
-		if (!hostages_)
-			return;
-	}
-
 	if (m_weaponId == WEAPON_SHIELDGUN)
 	{
 		if (!killerHasShield)
@@ -239,31 +216,6 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 		if ((m_defuser && !pAttacker->m_bIsDefusing) || (m_vip && !pAttacker->m_bIsVIP))
 			return;
 
-		if (m_rescuer)
-		{
-			int hostages_ = 0;
-			CBaseEntity *hostageEntity = NULL;
-
-			while ((hostageEntity = UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")) != NULL)
-			{
-				if (hostageEntity->pev->takedamage != DAMAGE_YES)
-					continue;
-
-				CHostage *hostage = static_cast<CHostage *>(hostageEntity);
-
-				if (!hostage->IsFollowingSomeone())
-					continue;
-
-				if (hostage->IsValid() && hostage->m_target == pAttacker)
-					++hostages_;
-			}
-
-			if (!hostages_)
-			{
-				return;
-			}
-		}
-
 		if( m_event != EVENT_KILL || ( !m_weaponId && !m_weaponClassId
 			&& m_event != EVENT_HEADSHOT ) || ( !m_weaponId && !m_weaponClassId
 			&& m_event != EVENT_PLAYER_TOOK_DAMAGE ) || ( !m_weaponId && !m_weaponClassId ) )
@@ -272,39 +224,11 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 			{
 				if (!Q_strcmp(m_name, "defendhostages"))
 				{
-					int hostages_ = 0;
-					CBaseEntity *hostageEntity = NULL;
 
-					while ((hostageEntity = UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")) != NULL)
-					{
-						if (hostageEntity->pev->takedamage != 1.0f && hostageEntity->pev->deadflag != DEAD_DEAD)
-							++hostages_;
-					}
-
-					if (!hostages_)
-					{
-						++m_eventsSeen;
-						SendPartialNotification();
-					}
 				}
 				else if (!Q_strcmp(m_name, "hostagessurvive"))
 				{
-					int hostages_ = 0;
-					CBaseEntity *hostageEntity = NULL;
 
-					while ((hostageEntity = UTIL_FindEntityByClassname(hostageEntity, "hostage_entity")) != NULL)
-					{
-						CHostage *hostage = (CHostage *)hostageEntity;
-
-						if (hostage && hostage->IsDead())
-							++hostages_;
-					}
-
-					if (!hostages_)
-					{
-						++m_eventsSeen;
-						SendPartialNotification();
-					}
 				}
 				else if (!Q_strcmp(m_name, "winfast"))
 				{

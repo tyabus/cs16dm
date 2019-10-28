@@ -3127,14 +3127,6 @@ bool IsSpotOccupied(CBaseEntity *me, const Vector *pos)
 			return true;
 	}
 
-	// is there is a hostage in this spot
-	if (g_pHostages != NULL)
-	{
-		CHostage *hostage = g_pHostages->GetClosestHostage(*pos, &range);
-		if (hostage != NULL && hostage != me && range < closeRange)
-			return true;
-	}
-
 	return false;
 }
 

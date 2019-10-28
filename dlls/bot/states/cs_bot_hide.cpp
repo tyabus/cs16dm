@@ -71,18 +71,6 @@ void HideState::OnUpdate(CCSBot *me)
 					}
 				}
 			}
-			else if (me->GetTask() == CCSBot::GUARD_HOSTAGE_RESCUE_ZONE)
-			{
-				// if we're guarding a rescue zone, continue to guard this or another rescue zone
-				if (me->GuardRandomZone())
-				{
-					me->SetTask(CCSBot::GUARD_HOSTAGE_RESCUE_ZONE);
-					me->PrintIfWatched("Continuing to guard hostage rescue zones\n");
-					me->SetDisposition(CCSBot::OPPORTUNITY_FIRE);
-					me->GetChatter()->GuardingHostageEscapeZone(IS_PLAN);
-					return;
-				}
-			}
 
 			me->Idle();
 			return;
@@ -187,37 +175,6 @@ void HideState::OnUpdate(CCSBot *me)
 				}
 				break;
 			}
-			case CCSBotManager::SCENARIO_RESCUE_HOSTAGES:
-			{
-				// if we're guarding the hostages and they all die or are taken, do something else
-				if (me->GetTask() == CCSBot::GUARD_HOSTAGES)
-				{
-					if (me->GetGameState()->AreAllHostagesBeingRescued() || me->GetGameState()->AreAllHostagesGone())
-					{
-						me->Idle();
-						return;
-					}
-				}
-				else if (me->GetTask() == CCSBot::GUARD_HOSTAGE_RESCUE_ZONE)
-				{
-					// if we stumble across a hostage, guard it
-					CHostage *hostage = me->GetGameState()->GetNearestVisibleFreeHostage();
-					if (hostage != NULL)
-					{
-						// we see a free hostage, guard it
-						CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&hostage->pev->origin);
-						if (area != NULL)
-						{
-							me->SetTask(CCSBot::GUARD_HOSTAGES);
-							me->Hide(area);
-							me->PrintIfWatched("I'm guarding hostages I found\n");
-							// don't chatter here - he'll tell us when he's in his hiding spot
-							return;
-						}
-					}
-				}
-			}
-		}
 
 		bool isSettledInSniper = (me->IsSniper() && m_isAtSpot) ? true : false;
 
@@ -297,18 +254,6 @@ void HideState::OnUpdate(CCSBot *me)
 							me->GetChatter()->Encourage("WaitingForHumanToDefuseBomb", RANDOM_FLOAT(5.0f, 8.0f));
 						else
 							me->GetChatter()->Encourage("WaitingForHumanToDefuseBombPanic", RANDOM_FLOAT(3.0f, 4.0f));
-					}
-				}
-
-				if (me->GetTask() == CCSBot::GUARD_HOSTAGES && me->IsAtHidingSpot())
-				{
-					if (me->GetNearbyEnemyCount() == 0)
-					{
-						CHostage *hostage = me->GetGameState()->GetNearestVisibleFreeHostage();
-						if (hostage != NULL)
-						{
-							me->GetChatter()->Encourage("WaitingForHumanToRescueHostages", RANDOM_FLOAT(10.0f, 15.0f));
-						}
 					}
 				}
 			}
@@ -414,6 +359,7 @@ void HideState::OnUpdate(CCSBot *me)
 				me->PrintIfWatched("Can't pathfind to hiding spot\n");
 				me->Idle();
 				return;
+				}
 			}
 		}
 	}

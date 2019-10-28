@@ -246,11 +246,6 @@ void CBotManager::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity 
 		CBot *bot = static_cast<CBot *>(player);
 		bot->OnEvent(event, entity, other);
 	}
-
-	if (g_pHostages != NULL)
-	{
-		g_pHostages->OnEvent(event, entity, other);
-	}
 }
 
 // Add an active grenade to the bot's awareness

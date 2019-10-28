@@ -215,32 +215,6 @@ void BotRequestReportMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
 	receiver->GetChatter()->ReportingIn();
 }
 
-// A teammate told us all the hostages are gone
-
-void BotAllHostagesGoneMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
-{
-	receiver->GetGameState()->AllHostagesGone();
-
-	// acknowledge
-	receiver->GetChatter()->Say("Affirmative");
-}
-
-// A teammate told us a CT is talking to a hostage
-
-void BotHostageBeingTakenMeme::Interpret(CCSBot *sender, CCSBot *receiver) const
-{
-	receiver->GetGameState()->HostageWasTaken();
-
-	// if we're busy, ignore
-	if (receiver->IsBusy())
-		return;
-
-	receiver->Idle();
-
-	// acknowledge
-	receiver->GetChatter()->Say("Affirmative");
-}
-
 BotSpeakable::BotSpeakable()
 {
 	m_phrase = NULL;
@@ -1704,25 +1678,6 @@ void BotChatterInterface::ReportingIn()
 			}
 			break;
 		}
-		case CCSBot::GUARD_HOSTAGES:
-		{
-			m_me->GetChatter()->GuardingHostages(UNDEFINED_PLACE, !m_me->IsAtHidingSpot());
-			break;
-		}
-		case CCSBot::GUARD_HOSTAGE_RESCUE_ZONE:
-		{
-			m_me->GetChatter()->GuardingHostageEscapeZone(!m_me->IsAtHidingSpot());
-			break;
-		}
-		case CCSBot::COLLECT_HOSTAGES:
-		{
-			break;
-		}
-		case CCSBot::RESCUE_HOSTAGES:
-		{
-			m_me->GetChatter()->EscortingHostages();
-			break;
-		}
 		case CCSBot::GUARD_VIP_ESCAPE_ZONE:
 		{
 			break;
@@ -2126,92 +2081,6 @@ void BotChatterInterface::AnnouncePlan(const char *phraseName, Place place)
 
 	// wait at least a short time after round start
 	say->SetStartTime(ctrl->GetRoundStartTime() + RANDOM_FLOAT(2.0, 3.0f));
-	AddStatement(say);
-}
-
-void BotChatterInterface::GuardingHostages(Place place, bool isPlan)
-{
-	if (TheCSBots()->IsRoundOver())
-		return;
-
-	const float minInterval = 20.0f;
-	if (m_planInterval.IsLessThen(minInterval))
-		return;
-
-	m_planInterval.Reset();
-
-	if (isPlan)
-		AnnouncePlan("GoingToGuardHostages", place);
-	else
-		Say("GuardingHostages");
-}
-
-void BotChatterInterface::GuardingHostageEscapeZone(bool isPlan)
-{
-	if (TheCSBots()->IsRoundOver())
-		return;
-
-	const float minInterval = 20.0f;
-	if (m_planInterval.IsLessThen(minInterval))
-		return;
-
-	m_planInterval.Reset();
-
-	if (isPlan)
-		AnnouncePlan("GoingToGuardHostageEscapeZone", UNDEFINED_PLACE);
-	else
-		Say("GuardingHostageEscapeZone");
-}
-
-void BotChatterInterface::HostagesBeingTaken()
-{
-	if (TheCSBots()->IsRoundOver())
-		return;
-
-	BotStatement *say = new BotStatement(this, REPORT_INFORMATION, 3.0f);
-	say->AppendPhrase(TheBotPhrases->GetPhrase("HostagesBeingTaken"));
-	say->AttachMeme(new BotHostageBeingTakenMeme());
-	AddStatement(say);
-}
-
-void BotChatterInterface::HostagesTaken()
-{
-	if (TheCSBots()->IsRoundOver())
-		return;
-
-	BotStatement *say = new BotStatement(this, REPORT_INFORMATION, 3.0f);
-	say->AppendPhrase(TheBotPhrases->GetPhrase("HostagesTaken"));
-	AddStatement(say);
-}
-
-void BotChatterInterface::TalkingToHostages()
-{
-	;
-}
-
-void BotChatterInterface::EscortingHostages()
-{
-	if (TheCSBots()->IsRoundOver())
-		return;
-
-	if (m_escortingHostageTimer.IsElapsed())
-	{
-		// throttle frequency
-		m_escortingHostageTimer.Start(10.0f);
-
-		BotStatement *say = new BotStatement(this, REPORT_MY_PLAN, 5.0f);
-		say->AppendPhrase(TheBotPhrases->GetPhrase("EscortingHostages"));
-		AddStatement(say);
-	}
-}
-
-NOXREF void BotChatterInterface::HostageDown()
-{
-	if (TheCSBots()->IsRoundOver())
-		return;
-
-	BotStatement *say = new BotStatement(this, REPORT_INFORMATION, 3.0f);
-	say->AppendPhrase(TheBotPhrases->GetPhrase("HostageDown"));
 	AddStatement(say);
 }
 

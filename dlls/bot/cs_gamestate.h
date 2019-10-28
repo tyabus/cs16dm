@@ -82,28 +82,6 @@ public:
 
 	const Vector *GetBombPosition() const;			// return where we think the bomb is, or NULL if we don't know
 
-	// hostage rescue scenario
-	CHostage *GetNearestFreeHostage(Vector *knowPos = NULL) const;					// return the closest free hostage, and where we think it is (knowPos)
-	const Vector *GetRandomFreeHostagePosition();
-	bool AreAllHostagesBeingRescued() const;							// return true if there are no free hostages
-	bool AreAllHostagesGone() const;								// all hostages have been rescued or are dead
-	void AllHostagesGone();										// someone told us all the hostages are gone
-	bool HaveSomeHostagesBeenTaken() const { return m_haveSomeHostagesBeenTaken; }			// return true if one or more hostages have been moved by the CT's
-	void HostageWasTaken() { m_haveSomeHostagesBeenTaken = true; }					// someone told us a CT is talking to a hostage
-
-	CHostage *GetNearestVisibleFreeHostage() const;
-
-	// hostage rescue scenario
-	//enum ValidateStatusType:unsigned char //C++11 feature
-	enum ValidateStatusType
-	{
-		NO_CHANGE = 0x00,
-		HOSTAGE_DIED = 0x01,
-		HOSTAGE_GONE = 0x02,
-		HOSTAGES_ALL_GONE = 0x04
-	};
-	ValidateStatusType ValidateHostagePositions();	// update our knowledge with what we currently see - returns bitflag events
-
 private:
 	CCSBot *m_owner;			// who owns this gamestate
 	bool m_isRoundOver;			// true if round is over, but no yet reset
@@ -129,24 +107,6 @@ private:
 
 	bool m_isPlantedBombPosKnown;		// if true, we know the exact location of the bomb
 	Vector m_plantedBombPos;
-
-	// hostage rescue scenario
-	struct HostageInfo
-	{
-		CHostage *hostage;
-		Vector knownPos;
-		bool isValid;
-		bool isAlive;
-		bool isFree;		// not being escorted by a CT
-	}
-	m_hostage[ MAX_HOSTAGES ];
-	int m_hostageCount;					// number of hostages left in map
-	CountdownTimer m_validateInterval;
-	NOXREF CBaseEntity *GetNearestHostage() const;		// return the closest live hostage
-	void InitializeHostageInfo();				// initialize our knowledge of the number and location of hostages
-
-	bool m_allHostagesRescued;				// if true, so every hostages been is rescued
-	bool m_haveSomeHostagesBeenTaken;			// true if a hostage has been moved by a CT (and we've seen it)
 };
 
 #endif // CS_GAMESTATE_H

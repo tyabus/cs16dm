@@ -601,36 +601,12 @@ void CCSBot::Update()
 			}
 			break;
 		}
-		case CCSBotManager::SCENARIO_RESCUE_HOSTAGES:
-		{
-			if (m_iTeam == CT)
-			{
-				UpdateHostageEscortCount();
-			}
-			else
-			{
-				// Terrorists have imperfect information on status of hostages
-				CSGameState::ValidateStatusType status = GetGameState()->ValidateHostagePositions();
-
-				if (status & CSGameState::HOSTAGES_ALL_GONE)
-				{
-					GetChatter()->HostagesTaken();
-					Idle();
-				}
-				else if (status & CSGameState::HOSTAGE_GONE)
-				{
-					GetGameState()->HostageWasTaken();
-					Idle();
-				}
-			}
-			break;
-		}
 	}
 
 	if(m_enemy == NULL)
 	{
-		SetLookAngles(pev->angles.y-360, pev->angles.x); 
-        SetLookAngles(pev->angles.y+360, pev->angles.x);
+		SetLookAngles(pev->angles.y-360, pev->angles.x);
+        	SetLookAngles(pev->angles.y+360, pev->angles.x);
 	}
 
 	// Follow nearby humans if our co-op is high and we have nothing else to do
@@ -750,38 +726,4 @@ void CCSBot::Update()
 		ResetStuckMonitor();
 		ClearMovement();
 	}
-
-	// if we get too far ahead of the hostages we are escorting, wait for them
-	if (!IsAttacking() && m_inhibitWaitingForHostageTimer.IsElapsed())
-	{
-		const float waitForHostageRange = 500.0f;
-		if (GetTask() == RESCUE_HOSTAGES && GetRangeToFarthestEscortedHostage() > waitForHostageRange)
-		{
-			if (!m_isWaitingForHostage)
-			{
-				// just started waiting
-				m_isWaitingForHostage = true;
-				m_waitForHostageTimer.Start(10.0f);
-			}
-			else
-			{
-				// we've been waiting
-				if (m_waitForHostageTimer.IsElapsed())
-				{
-					// give up waiting for awhile
-					m_isWaitingForHostage = false;
-					m_inhibitWaitingForHostageTimer.Start(3.0f);
-				}
-				else
-				{
-					// keep waiting
-					ResetStuckMonitor();
-					ClearMovement();
-				}
-			}
-		}
-	}
-
-	// remember our prior safe time status
-	m_wasSafe = IsSafe();
 }

@@ -4109,16 +4109,10 @@ void EXT_FUNC ServerDeactivate()
 
 	// Peform any shutdown operations here...
 	g_pGameRules->ServerDeactivate();
-	CLocalNav::Reset();
 
 	if (TheBots != NULL)
 	{
 		TheBots->ServerDeactivate();
-	}
-
-	if (g_pHostages != NULL)
-	{
-		g_pHostages->ServerDeactivate();
 	}
 }
 
@@ -4167,11 +4161,6 @@ void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 	if (TheBots != NULL)
 	{
 		TheBots->ServerActivate();
-	}
-
-	if (g_pHostages != NULL)
-	{
-		g_pHostages->ServerActivate();
 	}
 }
 
@@ -4222,8 +4211,6 @@ void EXT_FUNC StartFrame()
 
 	if (g_fGameOver)
 		return;
-
-	CLocalNav::Think();
 
 	static cvar_t *skill = NULL;
 	if (!skill)

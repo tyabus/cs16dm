@@ -266,9 +266,6 @@ void CCSBot::Attack(CBasePlayer *victim)
 	if (cv_bot_zombie.value != 0.0f)
 		return;
 
-    if(CVAR_GET_FLOAT("bots_dont_attack") > 0)
-        return;
-
 	// cannot attack if we are reloading
 	if (IsActiveWeaponReloading())
 		return;

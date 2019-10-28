@@ -55,18 +55,6 @@ public:
 	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const = 0;		// cause the given bot to act on this meme
 };
 
-class BotAllHostagesGoneMeme: public BotMeme
-{
-public:
-	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
-};
-
-class BotHostageBeingTakenMeme: public BotMeme
-{
-public:
-	virtual void Interpret(CCSBot *sender, CCSBot *receiver) const;			// cause the given bot to act on this meme
-};
-
 class BotHelpMeme: public BotMeme
 {
 public:

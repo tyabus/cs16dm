@@ -596,35 +596,6 @@ void CCSBot::SetHidingSpotCheckTimestamp(HidingSpot *spot)
 	}
 }
 
-// Periodic check of hostage count in case we lost some
-
-void CCSBot::UpdateHostageEscortCount()
-{
-	const float updateInterval = 1.0f;
-	if (m_hostageEscortCount == 0 || gpGlobals->time - m_hostageEscortCountTimestamp < updateInterval)
-		return;
-
-	m_hostageEscortCountTimestamp = gpGlobals->time;
-
-	// recount the hostages in case we lost some
-	m_hostageEscortCount = 0;
-
-	CHostage *hostage = NULL;
-	while ((hostage = static_cast<CHostage *>(UTIL_FindEntityByClassname(hostage, "hostage_entity"))) != NULL)
-	{
-		if (FNullEnt(hostage->edict()))
-			break;
-
-		// skip dead or rescued hostages
-		if (!hostage->IsValid())
-			continue;
-
-		// check if hostage has targeted us, and is following
-		if (hostage->IsFollowing(this))
-			++m_hostageEscortCount;
-	}
-}
-
 // Return true if we are outnumbered by enemies
 
 bool CCSBot::IsOutnumbered() const
@@ -786,12 +757,6 @@ bool CCSBot::IsHurrying() const
 	if (ctrl->GetScenario() == CCSBotManager::SCENARIO_DEFUSE_BOMB && ctrl->IsBombPlanted())
 		return true;
 
-	// if we are a T and hostages are being rescued, we are in a hurry
-	if (ctrl->GetScenario() == CCSBotManager::SCENARIO_RESCUE_HOSTAGES
-		&& m_iTeam == TERRORIST
-		&& GetGameState()->AreAllHostagesBeingRescued())
-		return true;
-
 	return false;
 }
 
@@ -896,16 +861,4 @@ const Vector *FindNearbyRetreatSpot(CCSBot *me, float maxRange)
 	// select a hiding spot at random
 	int which = RANDOM_LONG(0, collector.m_count - 1);
 	return collector.m_spot[ which ];
-}
-
-// Return euclidean distance to farthest escorted hostage.
-// Return -1 if no hostage is following us.
-
-float CCSBot::GetRangeToFarthestEscortedHostage() const
-{
-	FarthestHostage away(this);
-
-	g_pHostages->ForEachHostage(away);
-
-	return away.m_farRange;
 }

@@ -4049,11 +4049,6 @@ bool CBasePlayer::CanPlayerBuy(bool display)
 {
 	CHalfLifeMultiplay *mp = g_pGameRules;
 
-	if (!mp->IsMultiplayer())
-	{
-		return CHalfLifeTraining::PlayerCanBuy(this);
-	}
-
 	// is the player alive?
 	if (pev->deadflag != DEAD_NO)
 	{
@@ -6545,57 +6540,6 @@ void CBasePlayer::SendAmmoUpdate()
 	}
 }
 
-void CBasePlayer::SendHostagePos()
-{
-	CBaseEntity *pHostage = NULL;
-
-	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")) != NULL)
-	{
-		MESSAGE_BEGIN(MSG_ONE, gmsgHostagePos, NULL, pev);
-			WRITE_BYTE(1);
-			WRITE_BYTE(((CHostage *)pHostage)->m_iHostageIndex);
-			WRITE_COORD(pHostage->pev->origin.x);
-			WRITE_COORD(pHostage->pev->origin.y);
-			WRITE_COORD(pHostage->pev->origin.z);
-		MESSAGE_END();
-	}
-
-	SendHostageIcons();
-}
-
-void CBasePlayer::SendHostageIcons()
-{
-	CBaseEntity *pHostage = NULL;
-	int numHostages = 0;
-	char buf[16];
-
-	while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")) != NULL)
-	{
-		if (pHostage && pHostage->pev->deadflag == DEAD_NO)
-			numHostages++;
-	}
-
-	if (numHostages > 4)
-		numHostages = 4;
-
-	Q_snprintf(buf, ARRAYSIZE(buf), "hostage%d", numHostages);
-
-	if (numHostages)
-	{
-		MESSAGE_BEGIN(MSG_ONE, gmsgScenarioIcon, NULL, pev);
-			WRITE_BYTE(1);
-			WRITE_STRING(buf);
-			WRITE_BYTE(0);
-		MESSAGE_END();
-	}
-	else
-	{
-		MESSAGE_BEGIN(MSG_ONE, gmsgScenarioIcon, NULL, pev);
-			WRITE_BYTE(0);
-		MESSAGE_END();
-	}
-}
-
 void CBasePlayer::SendWeatherInfo()
 {
 	CBaseEntity *pPoint = UTIL_FindEntityByClassname(NULL, "env_rain");
@@ -6709,7 +6653,6 @@ void CBasePlayer::UpdateClientData()
 
 		SetBombIcon(FALSE);
 		SyncRoundTimer();
-		SendHostagePos();
 		SendWeatherInfo();
 
 		if (mp->IsMultiplayer())
@@ -7001,16 +6944,7 @@ void CBasePlayer::ResetMaxSpeed()
 		// Player gets speed bonus in observer mode
 		speed = 900;
 	}
-    else if(IsBot() && (CVAR_GET_FLOAT("bots_speed") > 0))
-    {
-        pev->maxspeed = CVAR_GET_FLOAT("bots_speed");
-
-        if(CVAR_GET_FLOAT("bots_speed") > CVAR_GET_FLOAT("sv_maxspeed"))
-            CVAR_SET_FLOAT("sv_maxspeed", CVAR_GET_FLOAT("bots_speed"));
-
-        return;
-    }
-    else if (m_pActiveItem != NULL)
+    	else if (m_pActiveItem != NULL)
 	{
 		// Get player speed from selected weapon
 		speed = m_pActiveItem->GetMaxSpeed();

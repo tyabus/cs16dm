@@ -421,9 +421,8 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	m_iUnBalancedRounds = 0;
 	m_iNumEscapeRounds = 0;
 	m_bRoundTerminating = false;
-    m_fFirstBlood = false;
+	m_fFirstBlood = false;
 
-	g_iHostageNumber = 0;
 	m_bBombDropped = FALSE;
 
 	m_iMaxRounds = (int)CVAR_GET_FLOAT("mp_maxrounds");
@@ -510,8 +509,6 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 #ifndef CSTRIKE
 	InstallBotControl();
 #endif // CSTRIKE
-
-	InstallHostageManager();
 
 	m_bSkipSpawn = m_bInCareerGame;
 
@@ -831,53 +828,6 @@ void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
 
 	m_fCareerRoundMenuTime = tmDelay + gpGlobals->time;
 	bool humansAreCTs = (Q_strcmp(humans_join_team.string, "CT") == 0);
-
-	if (humansAreCTs)
-	{
-		CBaseEntity *hostage = NULL;
-
-		int numHostagesInMap = 0;
-		int numHostagesFollowingHumans = 0;
-		int numHostagesAlive = 0;
-
-		while ((hostage = UTIL_FindEntityByClassname(hostage, "hostage_entity")) != NULL)
-		{
-			++numHostagesInMap;
-
-			CHostage *pHostage = static_cast<CHostage *>(hostage);
-
-			if (pHostage->pev->takedamage != DAMAGE_YES)
-			{
-				continue;
-			}
-
-			CBasePlayer *pLeader = NULL;
-
-			if (pHostage->IsFollowingSomeone())
-				pLeader = static_cast<CBasePlayer *>(pHostage->GetLeader());
-
-			if (pLeader == NULL)
-			{
-				++numHostagesAlive;
-			}
-			else
-			{
-				if (!pLeader->IsBot())
-				{
-					++numHostagesFollowingHumans;
-					TheCareerTasks->HandleEvent(EVENT_HOSTAGE_RESCUED, pLeader, 0);
-				}
-			}
-		}
-
-		if (!numHostagesAlive)
-		{
-			if ((numHostagesInMap * 0.5) <= (numHostagesFollowingHumans + m_iHostagesRescued))
-			{
-				TheCareerTasks->HandleEvent(EVENT_ALL_HOSTAGES_RESCUED);
-			}
-		}
-	}
 
 	switch (iWinStatus)
 	{
@@ -1586,9 +1536,6 @@ void CHalfLifeMultiplay::CheckMapConditions()
 		m_bMapHasBombZone = false;
 	}
 
-	// Check to see if this map has hostage rescue zones
-	m_bMapHasRescueZone = (UTIL_FindEntityByClassname(NULL, "func_hostage_rescue") != NULL);
-
 	// See if the map has func_buyzone entities
 	// Used by CBasePlayer::HandleSignals() to support maps without these entities
 	m_bMapHasBuyZone = (UTIL_FindEntityByClassname(NULL, "func_buyzone") != NULL);
@@ -1804,28 +1751,6 @@ void CHalfLifeMultiplay::RestartRound()
 		++m_iConsecutiveVIP;
 	}
 
-	int acct_tmp = 0;
-	CBaseEntity *hostage = NULL;
-
-	while ((hostage = UTIL_FindEntityByClassname(hostage, "hostage_entity")) != NULL)
-	{
-		if (acct_tmp >= 2000)
-			break;
-
-		CHostage *temp = static_cast<CHostage *>(hostage);
-
-		if (hostage->pev->solid != SOLID_NOT)
-		{
-			acct_tmp += 150;
-
-			if (hostage->pev->deadflag == DEAD_DEAD)
-			{
-				hostage->pev->deadflag = DEAD_RESPAWNABLE;
-			}
-		}
-
-	}
-
 	// Scale up the loser bonus when teams fall into losing streaks
 	if (m_iRoundWinStatus == WINSTATUS_TERRORISTS)	// terrorists won
 	{
@@ -1867,12 +1792,12 @@ void CHalfLifeMultiplay::RestartRound()
 	// assign the wining and losing bonuses
 	if (m_iRoundWinStatus == WINSTATUS_TERRORISTS)	// terrorists won
 	{
-		m_iAccountTerrorist += acct_tmp;
+		m_iAccountTerrorist += m_iLoserBonus;
 		m_iAccountCT += m_iLoserBonus;
 	}
 	else if (m_iRoundWinStatus == WINSTATUS_CTS)	// CT Won
 	{
-		m_iAccountCT += acct_tmp;
+		m_iAccountCT += m_iLoserBonus;
 
 		if (!m_bMapHasEscapeZone)
 		{

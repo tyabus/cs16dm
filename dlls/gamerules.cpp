@@ -155,8 +155,5 @@ CGameRules *InstallGameRules()
 	SERVER_COMMAND("exec game.cfg\n");
 	SERVER_EXECUTE();
 
-	if (!gpGlobals->deathmatch)
-		return new CHalfLifeTraining;
-
 	return new CHalfLifeMultiplay;
 }

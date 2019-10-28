@@ -12,10 +12,9 @@ endif
 
 LOCAL_CFLAGS += -w -D_LINUX -DCLIENT_WEAPONS -Dstricmp=strcasecmp -D_strnicmp=strncasecmp -Dstrnicmp=strncasecmp -D_snprintf=snprintf -D_stricmp=strcasecmp -D_vsnprintf=vsnprintf -D_strdup=strdup -D_write=write -D_close=close \
 	-fno-exceptions -fvisibility=hidden
-	
+
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/. \
 		    $(LOCAL_PATH)/.. \
-                    $(LOCAL_PATH)/hostage \
                     $(LOCAL_PATH)/bot \
 		    $(LOCAL_PATH)/csdm \
 		    $(LOCAL_PATH)/../common \
@@ -28,6 +27,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/. \
                     $(LOCAL_PATH)/../game_shared/bot \
 
 LOCAL_SRC_FILES := \
+	csdm/stub.cpp \
 	airtank.cpp \
 	ammo.cpp \
 	animating.cpp \
@@ -82,8 +82,6 @@ LOCAL_SRC_FILES := \
 	healthkit.cpp \
 	h_export.cpp \
 	hintmessage.cpp \
-	hostage/hostage.cpp \
-	hostage/hostage_localnav.cpp \
 	items.cpp \
 	lights.cpp \
 	maprules.cpp \
@@ -101,7 +99,6 @@ LOCAL_SRC_FILES := \
 	soundent.cpp \
 	spectator.cpp \
 	subs.cpp \
-	training_gamerules.cpp \
 	triggers.cpp \
 	util.cpp \
 	vehicle.cpp \

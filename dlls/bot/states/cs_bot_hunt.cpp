@@ -89,44 +89,6 @@ void HuntState::OnUpdate(CCSBot *me)
 			}
 		}
 	}
-	else if (ctrl->GetScenario() == CCSBotManager::SCENARIO_RESCUE_HOSTAGES)
-	{
-		if (me->m_iTeam == TERRORIST)
-		{
-			if (me->GetGameState()->AreAllHostagesBeingRescued())
-			{
-				// all hostages are being rescued, head them off at the escape zones
-				if (me->GuardRandomZone())
-				{
-					me->SetTask(CCSBot::GUARD_HOSTAGE_RESCUE_ZONE);
-					me->PrintIfWatched("Trying to beat them to an escape zone!\n");
-					me->SetDisposition(CCSBot::OPPORTUNITY_FIRE);
-					me->GetChatter()->GuardingHostageEscapeZone(IS_PLAN);
-					return;
-				}
-			}
-
-			// if safe time is up, and we stumble across a hostage, guard it
-			if (!me->IsRogue() && !me->IsSafe())
-			{
-				CHostage *hostage = me->GetGameState()->GetNearestVisibleFreeHostage();
-				if (hostage != NULL)
-				{
-					CNavArea *area = TheNavAreaGrid.GetNearestNavArea(&hostage->pev->origin);
-					if (area != NULL)
-					{
-						// we see a free hostage, guard it
-						me->SetTask(CCSBot::GUARD_HOSTAGES);
-						me->Hide(area);
-						me->PrintIfWatched("I'm guarding hostages\n");
-						me->GetChatter()->GuardingHostages(area->GetPlace(), IS_PLAN);
-						return;
-					}
-				}
-			}
-		}
-	}
-
 	// listen for enemy noises
 	if (me->ShouldInvestigateNoise())
 	{

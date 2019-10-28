@@ -289,26 +289,6 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *entity, CBaseEntity *othe
 	if (IsGameEventAudible(event, entity, other, &range, &priority, &isHostile) == false)
 		return;
 
-	if (event == EVENT_HOSTAGE_USED)
-	{
-		if (m_iTeam == CT)
-			return;
-
-		if ((entity->pev->origin - pev->origin).IsLengthGreaterThan(range))
-			return;
-
-		GetChatter()->HostagesBeingTaken();
-
-		if (!GetGameState()->GetNearestVisibleFreeHostage() && m_task != GUARD_HOSTAGE_RESCUE_ZONE && GuardRandomZone())
-		{
-			m_task = GUARD_HOSTAGE_RESCUE_ZONE;
-			m_taskEntity = NULL;
-
-			SetDisposition(OPPORTUNITY_FIRE);
-			PrintIfWatched("Trying to beat them to an escape zone!\n");
-		}
-	}
-
 	// check if noise is close enough for us to hear
 	const Vector *newNoisePosition = &player->pev->origin;
 	float newNoiseDist = (pev->origin - *newNoisePosition).Length();
