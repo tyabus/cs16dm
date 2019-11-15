@@ -534,14 +534,16 @@ void CWorld::Precache()
 	PRECACHE_SOUND("weapons/ric_conc-1.wav");
 	PRECACHE_SOUND("weapons/ric_conc-2.wav");
 
-    PRECACHE_SOUND("csdm/headshot.wav");
-    PRECACHE_SOUND("csdm/hattrick.wav");
-    PRECACHE_SOUND("csdm/dominating.wav");
-    PRECACHE_SOUND("csdm/monsterkill.wav");
-    PRECACHE_SOUND("csdm/godlike.wav");
-    PRECACHE_SOUND("csdm/ultrakill.wav");
-    PRECACHE_SOUND("csdm/firstblood.wav");
-
+	if(CVAR_GET_FLOAT("quake_sounds") >= 1)
+	{
+		PRECACHE_SOUND("csdm/headshot.wav");
+		PRECACHE_SOUND("csdm/hattrick.wav");
+		PRECACHE_SOUND("csdm/dominating.wav");
+		PRECACHE_SOUND("csdm/monsterkill.wav");
+		PRECACHE_SOUND("csdm/godlike.wav");
+		PRECACHE_SOUND("csdm/ultrakill.wav");
+		PRECACHE_SOUND("csdm/firstblood.wav");
+	}
 	// Setup light animation tables. 'a' is total darkness, 'z' is maxbright.
 
 	// 0 normal

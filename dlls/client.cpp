@@ -3886,12 +3886,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			}
 			else if (FStrEq(pcmd, "fov"))
 			{
-#if 0
-				if (g_flWeaponCheat && CMD_ARGC() > 1)
-					GetClassPtr((CBasePlayer *)pev)->m_iFOV = Q_atoi(CMD_ARGV(1));
-				else
-					CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"fov\" is \"%d\"\n", (int)GetClassPtr((CBasePlayer *)pev)->m_iFOV));
-#endif
+				// ignore it
 			}
 			else if (FStrEq(pcmd, "use"))
 			{

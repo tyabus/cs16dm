@@ -391,6 +391,11 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 
 	if (phraseDataFile == NULL)
 	{
+		if (g_bEnableCSBot)
+		{
+			CONSOLE_ECHO("WARNING: Cannot access bot phrase database '%s'\n", filename);
+		}
+
 		return false;
 	}
 
@@ -907,15 +912,6 @@ bool BotStatement::IsObsolete() const
 		if (m_type != REPORT_EMOTE)
 			return true;
 	}
-
-#if 0
-	// If we're wanting to say "I lost him" but we've spotted another enemy,
-	// we no longer need to report losing someone.
-	if (GetOwner()->GetChatter()->SeesAtLeastOneEnemy() && m_type == REPORT_ENEMY_LOST)
-	{
-		return true;
-	}
-#endif
 
 	// check if statement lifetime has expired
 	return (gpGlobals->time > m_expireTime);

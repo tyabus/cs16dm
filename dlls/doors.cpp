@@ -1081,15 +1081,6 @@ void CMomentaryDoor::Use (CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	{
 		EMIT_SOUND (ENT (pev), CHAN_STATIC, (char *)STRING (pev->noiseMoving), VOL_NORM, ATTN_NORM);
 	}
-#if 0
-	// If we already moving to designated point, return
-	else if (move == m_vecFinalDest)
-	{
-		return;
-	}
-
-	SetMoveDone (&CMomentaryDoor::DoorMoveDone);
-#endif
 
 	LinearMove (move, speed);
 }

@@ -11,3 +11,4 @@ Vector g_vecAttackDir;
 int g_iSkillLevel;
 int gDisplayTitle;
 BOOL g_fGameOver;
+bool g_bEnableCSBot = false;

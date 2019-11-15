@@ -2223,19 +2223,6 @@ void CWeather::Spawn()
 
 void CClientFog::KeyValue(KeyValueData *pkvd)
 {
-#if 0
-	if (FStrEq(pkvd->szKeyName, "startdist"))
-	{
-		m_iStartDist = Q_atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "enddist"))
-	{
-		m_iEndDist = Q_atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else
-#endif
 	if (FStrEq(pkvd->szKeyName, "density"))
 	{
 		m_fDensity = Q_atof(pkvd->szValue);

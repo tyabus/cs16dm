@@ -976,16 +976,6 @@ void CFuncTrackTrain::Blocked(CBaseEntity *pOther)
 		pevOther->velocity = (pevOther->origin - pev->origin).Normalize() * pev->dmg;
 
 	ALERT(at_aiconsole, "TRAIN(%s): Blocked by %s (dmg:%.2f)\n", STRING(pev->targetname), STRING(pOther->pev->classname), pev->dmg);
-
-	// TODO: is missing?
-#if 0
-	if (pev->dmg <= 0)
-		return;
-
-	// we can't hurt this thing, so we're not concerned with it
-	pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
-
-#endif
 }
 
 void CFuncTrackTrain::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
@@ -1635,10 +1625,7 @@ void CFuncTrackChange::Precache()
 
 void CFuncTrackChange::Touch(CBaseEntity *pOther)
 {
-#if 0
-	TRAIN_CODE code;
-	entvars_t *pevToucher = pOther->pev;
-#endif
+	// stub
 }
 
 void CFuncTrackChange::KeyValue(KeyValueData *pkvd)

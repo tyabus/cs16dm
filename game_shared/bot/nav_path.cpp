@@ -357,34 +357,6 @@ int CNavPath::FindNextOccludedNode(int anchor_)
 
 void CNavPath::Optimize()
 {
-	// DONT USE THIS: Optimizing the path results in cutting thru obstacles
-#if 0
-	if (m_segmentCount < 3)
-		return;
-
-	int anchor_ = 0;
-	while (anchor_ < m_segmentCount)
-	{
-		int occluded = FindNextOccludedNode(anchor_);
-		int nextAnchor = occluded - 1;
-
-		if (nextAnchor > anchor_)
-		{
-			// remove redundant nodes between anchor and nextAnchor
-			int removeCount = nextAnchor - anchor_ - 1;
-			if (removeCount > 0)
-			{
-				for (int i = nextAnchor; i < m_segmentCount; ++i)
-				{
-					m_path[i - removeCount] = m_path[i];
-				}
-				m_segmentCount -= removeCount;
-			}
-		}
-
-		++anchor_;
-	}
-#endif
 }
 
 CNavPathFollower::CNavPathFollower()

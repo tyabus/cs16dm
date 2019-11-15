@@ -270,6 +270,51 @@ void CCSBotManager::AddServerCommands()
 {
 	static bool fFirstTime = true;
 
+	if (g_bEnableCSBot)
+	{
+		AddServerCommand("bot_about");
+		AddServerCommand("bot_add");
+		AddServerCommand("bot_add_t");
+		AddServerCommand("bot_add_ct");
+		AddServerCommand("bot_kill");
+		AddServerCommand("bot_kick");
+		AddServerCommand("bot_knives_only");
+		AddServerCommand("bot_pistols_only");
+		AddServerCommand("bot_snipers_only");
+		AddServerCommand("bot_all_weapons");
+		AddServerCommand("entity_dump");
+		AddServerCommand("bot_nav_delete");
+		AddServerCommand("bot_nav_split");
+		AddServerCommand("bot_nav_merge");
+		AddServerCommand("bot_nav_mark");
+		AddServerCommand("bot_nav_begin_area");
+		AddServerCommand("bot_nav_end_area");
+		AddServerCommand("bot_nav_connect");
+		AddServerCommand("bot_nav_disconnect");
+		AddServerCommand("bot_nav_splice");
+		AddServerCommand("bot_nav_crouch");
+		AddServerCommand("bot_nav_jump");
+		AddServerCommand("bot_nav_precise");
+		AddServerCommand("bot_nav_no_jump");
+		AddServerCommand("bot_nav_analyze");
+		AddServerCommand("bot_nav_strip");
+		AddServerCommand("bot_nav_save");
+		AddServerCommand("bot_nav_load");
+		AddServerCommand("bot_nav_use_place");
+		AddServerCommand("bot_nav_place_floodfill");
+		AddServerCommand("bot_nav_place_pick");
+		AddServerCommand("bot_nav_toggle_place_mode");
+		AddServerCommand("bot_nav_toggle_place_painting");
+		AddServerCommand("bot_goto_mark");
+		AddServerCommand("bot_memory_usage");
+		AddServerCommand("bot_nav_mark_unnamed");
+		AddServerCommand("bot_nav_warp");
+		AddServerCommand("bot_nav_corner_select");
+		AddServerCommand("bot_nav_corner_raise");
+		AddServerCommand("bot_nav_corner_lower");
+		AddServerCommand("bot_nav_check_consistency");
+	}
+
 	if (!fFirstTime)
 		return;
 
@@ -321,7 +366,7 @@ void PrintAllEntities()
 
 void CCSBotManager::ServerCommand(const char *pcmd)
 {
-	if (!m_bServerActive)
+	if (!m_bServerActive || !g_bEnableCSBot)
 		return;
 
 	char buffer[512];
@@ -716,6 +761,9 @@ bool CCSBotManager::BotAddCommand(BotProfileTeamType team, bool isFromConsole)
 	if (m_isLearningMap)
 		return false;
 
+	if (!g_bEnableCSBot)
+		return false;
+
 	const BotProfile *profile = NULL;
 
 	if (!isFromConsole || CMD_ARGC() < 2)
@@ -952,7 +1000,7 @@ private:
 
 void CCSBotManager::ValidateMapData()
 {
-	if (m_isMapDataLoaded)
+	if (m_isMapDataLoaded || !g_bEnableCSBot)
 		return;
 
 	m_isMapDataLoaded = true;
@@ -1092,6 +1140,9 @@ void CCSBotManager::ValidateMapData()
 
 bool CCSBotManager::AddBot(const BotProfile *profile, BotProfileTeamType team)
 {
+	if (!g_bEnableCSBot)
+		return false;
+
 	CHalfLifeMultiplay *mp = g_pGameRules;
 
 	int nTeamSlot = UNASSIGNED;

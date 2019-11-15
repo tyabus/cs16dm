@@ -42,6 +42,7 @@ cvar_t winlimit = { "mp_winlimit", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t windifference = { "mp_windifference", "1", FCVAR_SERVER, 0.0f, NULL };
 cvar_t godtime = { "god_time", "2.5", FCVAR_SERVER, 0.0f, NULL };
 cvar_t ungren = { "unlimited_grenades", "0", FCVAR_SERVER, 0.0f, NULL };
+cvar_t unammo = { "unlimited_ammo", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t playerid = { "mp_playerid", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t allow_spectators = { "allow_spectators", "1.0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t mp_chattime = { "mp_chattime", "10", FCVAR_SERVER, 0.0f, NULL };
@@ -55,7 +56,6 @@ cvar_t speed = { "speed_graph", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t rands = { "rand_spawn", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t spawns = {"max_rand_spawns", "32", FCVAR_SERVER, 0.0f, NULL };
 cvar_t bhop = { "mp_bhop", "0", FCVAR_SERVER, 0.0f, NULL };
-cvar_t trbullet = { "trace_bullets", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t csdmsounds = {"quake_sounds", "0", FCVAR_SERVER, 0.0f, NULL };
 cvar_t botstrafe = {"bots_only_strafe", 0, FCVAR_SERVER, 0.0f, NULL };
 cvar_t botrandom = { "bots_rand_spawn_only", "0", FCVAR_SERVER, 0.0f, NULL };
@@ -105,6 +105,8 @@ cvar_t sk_scientist_heal3 = { "sk_scientist_heal3", "0", 0, 0.0f, NULL };
 
 void EXT_FUNC GameDLLInit()
 {
+	g_bEnableCSBot = ENG_CHECK_PARM ("-bots", NULL) != 0;
+
 	g_psv_gravity = CVAR_GET_POINTER("sv_gravity");
 	g_psv_aim = CVAR_GET_POINTER("sv_aim");
 	g_footsteps = CVAR_GET_POINTER("mp_footsteps");
@@ -138,7 +140,6 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&spawns);              // D
 	CVAR_REGISTER(&killcolor);
 	CVAR_REGISTER(&bhop);                // M
-	CVAR_REGISTER(&trbullet);
 	CVAR_REGISTER(&csdmsounds);
 	CVAR_REGISTER(&botrandom);
 	/*************************/
@@ -164,4 +165,6 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&fragsleft);
 	CVAR_REGISTER(&timeleft);
 	CVAR_REGISTER(&humans_join_team);
+
+	Bot_RegisterCvars();
 }

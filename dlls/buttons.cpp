@@ -940,13 +940,6 @@ void CMomentaryRotButton::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 
 	UpdateAllButtons(pev->ideal_yaw, 1);
 	UpdateTarget(pev->ideal_yaw);
-
-#if 0
-	// Calculate destination angle and use it to predict value, this prevents sending target in wrong direction on retriggering
-	Vector dest = pev->angles + pev->avelocity * (pev->nextthink - pev->ltime);
-	float value1 = CBaseToggle::AxisDelta(pev->spawnflags, dest, m_start) / m_flMoveDistance;
-	UpdateTarget(value1);
-#endif
 }
 
 void CMomentaryRotButton::UpdateAllButtons(float value, int start)

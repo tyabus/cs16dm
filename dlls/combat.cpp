@@ -874,20 +874,6 @@ int CBaseMonster::DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker
 		}
 	}
 
-// turn this back on when the bounding box issues are resolved.
-#if 0
-
-	pev->flags &= ~FL_ONGROUND;
-	pev->origin.z += 1;
-
-	// let the damage scoot the corpse around a bit.
-	if (!FNullEnt(pevInflictor) && (pevAttacker->solid != SOLID_TRIGGER))
-	{
-		pev->velocity = pev->velocity + vecDir * -DamageForce(flDamage);
-	}
-
-#endif
-
 	// kill the corpse if enough damage was done to destroy the corpse and the damage is of a type that is allowed to destroy the corpse.
 	if (bitsDamageType & DMG_GIB_CORPSE)
 	{
@@ -1823,46 +1809,6 @@ Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float vec
 
 
 			Vector vecEndPos2 = tr.vecEndPos - (vecDir * 3);
-            if(CVAR_GET_FLOAT("trace_bullets") >= 1)
-            {
-                MESSAGE_BEGIN(MSG_ALL, SVC_TEMPENTITY);
-                    WRITE_BYTE(TE_LINE);
-                    WRITE_COORD(vecEndPos2.x);
-                    WRITE_COORD(vecEndPos2.y);
-                    WRITE_COORD(vecEndPos2.z);
-
-                    WRITE_COORD(tr.vecEndPos.x);
-                    WRITE_COORD(tr.vecEndPos.y);
-                    WRITE_COORD(tr.vecEndPos.z);
-                    WRITE_SHORT(300);
-
-                    if(IsSecondaryWeapon(item->m_iId))
-                    {
-                        WRITE_BYTE(0);
-                        WRITE_BYTE(0);
-                        WRITE_BYTE(255);
-                    }
-                    else if(IsARifle(item->m_iId))
-                    {
-                        WRITE_BYTE(0);
-                        WRITE_BYTE(255);
-                        WRITE_BYTE(0);
-                    }
-                    else if(isSniperRifle(item))
-                    {
-                        WRITE_BYTE(255);
-                        WRITE_BYTE(0);
-                        WRITE_BYTE(0);
-                    }
-                    else if(IsSMG(item->m_iId))
-                    {
-                        WRITE_BYTE(247);
-                        WRITE_BYTE((156));
-                        WRITE_BYTE(100);
-                    }
-
-                MESSAGE_END();
-            }
 
 			vecSrc = tr.vecEndPos + (vecDir * iPenetrationPower);
 			flDistance = (flDistance - flCurrentDistance) * flDistanceModifier;

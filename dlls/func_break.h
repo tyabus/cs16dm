@@ -142,13 +142,6 @@ public:
 	void Move(CBaseEntity *pMover, int push);
 	void EXPORT StopSound()
 	{
-#if 0
-		Vector dist = pev->oldorigin - pev->origin;
-		if (dist.Length() <= 0)
-		{
-			STOP_SOUND(ENT(pev), CHAN_WEAPON, m_soundNames[m_lastSound]);
-		}
-#endif
 	}
 	float MaxSpeed() const { return m_maxSpeed; }
 
