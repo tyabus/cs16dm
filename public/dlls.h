@@ -88,8 +88,6 @@
 #include "doors.h"
 #include "bmodels.h"
 
-#include "debug.h"
-
 #include "player.h"
 #include "observer.h"
 #include "client.h"

@@ -3675,7 +3675,10 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			if (TheBots->ClientCommand(GetClassPtr((CBasePlayer *)pev), pcmd))
 				return;
 		}
-
+		if (FStrEq(pcmd, "mp_debug"))
+		{
+			// stub?
+		}
 		else if (FStrEq(pcmd, "jointeam"))
 		{
 			if (player->m_iMenu == Menu_ChooseAppearance)
