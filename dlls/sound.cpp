@@ -1864,7 +1864,7 @@ void CSpeaker::Precache()
 
 void CSpeaker::SpeakerThink()
 {
-	char *szSoundFile = NULL;
+	char *szSoundFile = "";
 	float flvolume = pev->health * 0.1f;
 	float flattenuation = 0.3f;
 	int flags = 0;

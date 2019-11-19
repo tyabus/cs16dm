@@ -66,7 +66,6 @@ LOCAL_SRC_FILES := \
 	cbase.cpp \
 	client.cpp \
 	combat.cpp \
-	debug.cpp \
 	doors.cpp \
 	effects.cpp \
 	explode.cpp \

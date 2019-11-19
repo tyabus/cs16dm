@@ -9,7 +9,6 @@ const TaskInfo taskInfo[] =
 {
 	{ "defuse",			EVENT_BOMB_DEFUSED,		&CCareerTask::NewTask },
 	{ "plant",			EVENT_BOMB_PLANTED,		&CCareerTask::NewTask },
-	{ "rescue",			EVENT_HOSTAGE_RESCUED,		&CCareerTask::NewTask },
 	{ "killall",			EVENT_KILL_ALL,			&CCareerTask::NewTask },
 	{ "kill",			EVENT_KILL,			&CCareerTask::NewTask },
 	{ "killwith",			EVENT_KILL,			&CCareerTask::NewTask },
@@ -18,14 +17,10 @@ const TaskInfo taskInfo[] =
 	{ "headshot",			EVENT_HEADSHOT,			&CCareerTask::NewTask },
 	{ "headshotwith",		EVENT_HEADSHOT,			&CCareerTask::NewTask },
 	{ "winfast",			EVENT_ROUND_WIN,		&CCareerTask::NewTask },
-	{ "rescue",			EVENT_HOSTAGE_RESCUED,		&CCareerTask::NewTask },
-	{ "rescueall",			EVENT_ALL_HOSTAGES_RESCUED,	&CCareerTask::NewTask },
 	{ "injure",			EVENT_PLAYER_TOOK_DAMAGE,	&CCareerTask::NewTask },
 	{ "injurewith",			EVENT_PLAYER_TOOK_DAMAGE,	&CCareerTask::NewTask },
 	{ "killdefuser",		EVENT_KILL,			&CCareerTask::NewTask },
 	{ "stoprescue",			EVENT_KILL,			&CCareerTask::NewTask },
-	{ "defendhostages",		EVENT_ROUND_WIN,		&CCareerTask::NewTask },
-	{ "hostagessurvive",		EVENT_ROUND_WIN,		&CCareerTask::NewTask },
 	{ "preventdefuse",		EVENT_ROUND_WIN,		&CPreventDefuseTask::NewTask },
 	{ NULL,				EVENT_INVALID,			&CCareerTask::NewTask }
 };
@@ -103,12 +98,6 @@ CCareerTask::CCareerTask(const char *taskName, GameEventType event, const char *
 	m_rescuer = (Q_stricmp(taskName, "stoprescue") == 0);
 	m_defuser = (Q_stricmp(taskName, "killdefuser") == 0);
 	m_vip = (Q_stricmp(taskName, "killvip") == 0);
-
-	if (event == EVENT_ALL_HOSTAGES_RESCUED)
-	{
-		m_mustLive = true;
-		m_crossRounds = false;
-	}
 
 	if (m_isComplete)
 	{
@@ -222,15 +211,7 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 		{
 			if (m_event == EVENT_ROUND_WIN)
 			{
-				if (!Q_strcmp(m_name, "defendhostages"))
-				{
-
-				}
-				else if (!Q_strcmp(m_name, "hostagessurvive"))
-				{
-
-				}
-				else if (!Q_strcmp(m_name, "winfast"))
+				if (!Q_strcmp(m_name, "winfast"))
 				{
 					if (m_eventsNeeded >= TheCareerTasks->GetRoundElapsedTime())
 					{

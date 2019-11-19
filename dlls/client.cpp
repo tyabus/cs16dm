@@ -861,16 +861,6 @@ void Host_Say(edict_t *pEntity, int teamonly)
 
 void DropSecondary(CBasePlayer *pPlayer)
 {
-	if (pPlayer->HasShield())
-	{
-		if (pPlayer->HasShield() && pPlayer->m_bShieldDrawn && pPlayer->m_pActiveItem != NULL)
-		{
-			((CBasePlayerWeapon *)pPlayer->m_pActiveItem)->SecondaryAttack();
-		}
-
-		pPlayer->m_bShieldDrawn = false;
-	}
-
 	CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ];
 
 	if (pWeapon != NULL)
@@ -882,12 +872,6 @@ void DropSecondary(CBasePlayer *pPlayer)
 
 void DropPrimary(CBasePlayer *pPlayer)
 {
-	if (pPlayer->HasShield())
-	{
-		pPlayer->DropShield();
-		return;
-	}
-
 	if (pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ])
 	{
 		pPlayer->DropPlayerItem(STRING(pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]->pev->classname));
@@ -897,21 +881,6 @@ void DropPrimary(CBasePlayer *pPlayer)
 bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
 {
 	CHalfLifeMultiplay *mp = g_pGameRules;
-
-	if (pPlayer->HasShield() && iWeapon == WEAPON_ELITE)
-	{
-		return false;
-	}
-
-	if (pPlayer->HasShield() && iWeapon == WEAPON_SHIELDGUN)
-	{
-		return false;
-	}
-
-	if (pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ] != NULL && pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ]->m_iId == WEAPON_ELITE && iWeapon == WEAPON_SHIELDGUN)
-	{
-		return false;
-	}
 
 	if (pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ] != NULL && pPlayer->m_rgpPlayerItems[ PRIMARY_WEAPON_SLOT ]->m_iId == iWeapon)
 	{
@@ -1656,23 +1625,6 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 		}
 		case MENU_SLOT_ITEM_SHIELD:
 		{
-			if (!CanBuyThis(pPlayer, WEAPON_SHIELDGUN))
-			{
-				return;
-			}
-
-			if (pPlayer->m_iAccount >= SHIELDGUN_PRICE)
-			{
-				DropPrimary(pPlayer);
-
-				pPlayer->GiveShield(true);
-				pPlayer->AddAccount(-SHIELDGUN_PRICE);
-
-				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
-			}
-			else
-				enoughMoney = 0;
-
 			break;
 		}
 	}
@@ -2450,12 +2402,6 @@ bool BuyAmmo(CBasePlayer *player, int nSlot, bool bBlinkMoney)
 
 	CBasePlayerItem *pItem = player->m_rgpPlayerItems[ nSlot ];
 
-	if (player->HasShield())
-	{
-		if (player->m_rgpPlayerItems[ PISTOL_SLOT ])
-			pItem = player->m_rgpPlayerItems[ PISTOL_SLOT ];
-	}
-
 	if (pItem != NULL)
 	{
 		while (BuyGunAmmo(player, pItem, bBlinkMoney))
@@ -2626,19 +2572,6 @@ BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 				pszFailItem = "#Bomb_Defusal_Kit";
 			}
 		}
-		else if (FStrEq(pszCommand, "shield"))
-		{
-			bRetVal = TRUE;
-			if (pPlayer->m_iTeam == CT)
-			{
-				BuyItem(pPlayer, MENU_SLOT_ITEM_SHIELD);
-			}
-			else
-			{
-				// fail gracefully
-				pszFailItem = "#TactShield_Desc";
-			}
-		}
 	}
 
 	if (g_bClientPrintEnable && pszFailItem != NULL)
@@ -2646,7 +2579,6 @@ BOOL HandleBuyAliasCommands(CBasePlayer *pPlayer, const char *pszCommand)
 		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Alias_Not_Avail", pszFailItem);
 	}
 
-    //pPlayer->BuildRebuyStruct();
 	return bRetVal;
 }
 
@@ -3744,10 +3676,6 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 				return;
 		}
 
-		if (FStrEq(pcmd, "mp_debug"))
-		{
-			UTIL_SetDprintfFlags(CMD_ARGV_(1));
-		}
 		else if (FStrEq(pcmd, "jointeam"))
 		{
 			if (player->m_iMenu == Menu_ChooseAppearance)
@@ -3871,18 +3799,7 @@ void EXT_FUNC ClientCommand(edict_t *pEntity)
 			}
 			else if (FStrEq(pcmd, "drop"))
 			{
-				// player is dropping an item.
-				if (player->HasShield())
-				{
-					if (player->m_pActiveItem != NULL && player->m_pActiveItem->m_iId == WEAPON_C4)
-					{
-						player->DropPlayerItem("weapon_c4");
-					}
-					else
-						player->DropShield();
-				}
-				else
-					player->DropPlayerItem(CMD_ARGV_(1));
+				player->DropPlayerItem(CMD_ARGV_(1));
 			}
 			else if (FStrEq(pcmd, "fov"))
 			{
@@ -4355,23 +4272,14 @@ void ClientPrecache()
 	PRECACHE_MODEL("models/p_c4.mdl");
 	PRECACHE_MODEL("models/w_c4.mdl");
 	PRECACHE_MODEL("models/p_deagle.mdl");
-	PRECACHE_MODEL("models/shield/p_shield_deagle.mdl");
 	PRECACHE_MODEL("models/p_flashbang.mdl");
-	PRECACHE_MODEL("models/shield/p_shield_flashbang.mdl");
 	PRECACHE_MODEL("models/p_hegrenade.mdl");
-	PRECACHE_MODEL("models/shield/p_shield_hegrenade.mdl");
 	PRECACHE_MODEL("models/p_glock18.mdl");
-	PRECACHE_MODEL("models/shield/p_shield_glock18.mdl");
 	PRECACHE_MODEL("models/p_p228.mdl");
-	PRECACHE_MODEL("models/shield/p_shield_p228.mdl");
 	PRECACHE_MODEL("models/p_smokegrenade.mdl");
-	PRECACHE_MODEL("models/shield/p_shield_smokegrenade.mdl");
 	PRECACHE_MODEL("models/p_usp.mdl");
-	PRECACHE_MODEL("models/shield/p_shield_usp.mdl");
 	PRECACHE_MODEL("models/p_fiveseven.mdl");
-	PRECACHE_MODEL("models/shield/p_shield_fiveseven.mdl");
 	PRECACHE_MODEL("models/p_knife.mdl");
-	PRECACHE_MODEL("models/shield/p_shield_knife.mdl");
 	PRECACHE_MODEL("models/w_flashbang.mdl");
 	PRECACHE_MODEL("models/w_hegrenade.mdl");
 	PRECACHE_MODEL("models/p_sg550.mdl");
@@ -4391,8 +4299,6 @@ void ClientPrecache()
 	PRECACHE_MODEL("models/p_xm1014.mdl");
 	PRECACHE_MODEL("models/p_galil.mdl");
 	PRECACHE_MODEL("models/p_famas.mdl");
-	PRECACHE_MODEL("models/p_shield.mdl");
-	PRECACHE_MODEL("models/w_shield.mdl");
 
 	Vector temp = g_vecZero;
 	Vector vMin = Vector(-38, -24, -41);
@@ -4491,16 +4397,6 @@ void ClientPrecache()
 
 	vMin = Vector(-16, -8, -54);
 	vMax = Vector(16, 6, 24);
-
-	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/shield/p_shield_deagle.mdl");
-	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/shield/p_shield_fiveseven.mdl");
-	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/shield/p_shield_flashbang.mdl");
-	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/shield/p_shield_glock18.mdl");
-	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/shield/p_shield_hegrenade.mdl");
-	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/shield/p_shield_knife.mdl");
-	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/shield/p_shield_p228.mdl");
-	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/shield/p_shield_smokegrenade.mdl");
-	ENGINE_FORCE_UNMODIFIED(force_model_specifybounds, (float *)&vMin, (float *)&vMax, "models/shield/p_shield_usp.mdl");
 
 	PRECACHE_SOUND("common/wpn_hudoff.wav");
 	PRECACHE_SOUND("common/wpn_hudon.wav");
@@ -5206,10 +5102,7 @@ void EXT_FUNC UpdateClientData(const struct edict_s *ent, int sendweapons, struc
 		else
 			iUser3 &= ~DATA_IUSER3_INBOMBZONE;
 
-		if (pl->HasShield())
-			iUser3 |= DATA_IUSER3_HOLDINGSHIELD;
-		else
-			iUser3 &= ~DATA_IUSER3_HOLDINGSHIELD;
+		iUser3 &= ~DATA_IUSER3_HOLDINGSHIELD;
 
 		if (!pl->pev->iuser1 && !pevOrg)
 			cd->iuser3 = iUser3;

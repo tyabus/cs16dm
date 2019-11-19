@@ -38,7 +38,6 @@ AutoBuyInfoStruct g_autoBuyInfo[] =
 	{ AUTOBUYCLASS_GRENADE,					"sgren",	"weapon_smokegrenade"},
 	{ AUTOBUYCLASS_NIGHTVISION,				"nvgs",		"nvgs" },
 	{ AUTOBUYCLASS_DEFUSER,					"defuser",	"defuser" },
-	{ AUTOBUYCLASS_PRIMARY|AUTOBUYCLASS_SHIELD,		"shield",	"shield" },
 	{ AUTOBUYCLASS_NONE, NULL, NULL }
 };
 
@@ -74,7 +73,6 @@ WeaponAliasInfo weaponAliasInfo[] =
 	{ "ak47",	WEAPON_AK47 },
 	{ "knife",	WEAPON_KNIFE },
 	{ "p90",	WEAPON_P90 },
-	{ "shield",	WEAPON_SHIELDGUN },
 	{ "none",	WEAPON_NONE },
 	{ "grenade",	WEAPON_HEGRENADE },
 	{ "hegrenade",	WEAPON_HEGRENADE },
@@ -164,7 +162,6 @@ WeaponClassAliasInfo weaponClassAliasInfo[] =
 	{ "ak47",	WEAPONCLASS_RIFLE },
 	{ "knife",	WEAPONCLASS_KNIFE },
 	{ "p90",	WEAPONCLASS_SUBMACHINEGUN },
-	{ "shield",	WEAPONCLASS_PISTOL },
 	{ "grenade",	WEAPONCLASS_GRENADE },
 	{ "hegrenade",	WEAPONCLASS_GRENADE },
 	{ "glock18",	WEAPONCLASS_PISTOL },
@@ -209,7 +206,6 @@ WeaponInfoStruct weaponInfo[] =
 	{ WEAPON_SG552,		SG552_PRICE,		AMMO_556MM_PRICE,	AMMO_556NATO_BUY,	SG552_MAX_CLIP,		MAX_AMMO_556NATO,	AMMO_556NATO,		"weapon_sg552" },
 	{ WEAPON_AK47,		AK47_PRICE,		AMMO_762MM_PRICE,	AMMO_762NATO_BUY,	AK47_MAX_CLIP,		MAX_AMMO_762NATO,	AMMO_762NATO,		"weapon_ak47" },
 	{ WEAPON_P90,		P90_PRICE,		AMMO_57MM_PRICE,	AMMO_57MM_BUY,		P90_MAX_CLIP,		MAX_AMMO_57MM,		AMMO_57MM,		"weapon_p90" },
-	{ WEAPON_SHIELDGUN,	SHIELDGUN_PRICE,	0,			0,			0,			0,			-1,			NULL },
 	{ 0,			0,			0,			0,			0,			0,			-1,			NULL }
 };
 

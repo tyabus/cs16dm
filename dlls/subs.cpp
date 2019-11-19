@@ -61,8 +61,6 @@ LINK_ENTITY_TO_CLASS(info_vip_start, CBaseDMStart);
 
 LINK_ENTITY_TO_CLASS(info_landmark, CPointEntity);
 
-LINK_ENTITY_TO_CLASS(info_hostage_rescue, CPointEntity);
-
 LINK_ENTITY_TO_CLASS(info_bomb_target, CPointEntity);
 
 void CBaseDMStart::KeyValue(KeyValueData *pkvd)

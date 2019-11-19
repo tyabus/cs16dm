@@ -615,28 +615,12 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity *pOther)
 
 void CBasePlayerWeapon::SetPlayerShieldAnim()
 {
-	if (!m_pPlayer->HasShield())
-		return;
-
-	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
-	{
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shield");
-	}
-	else
-	{
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgun");
-	}
+	return;
 }
 
 void CBasePlayerWeapon::ResetPlayerShieldAnim()
 {
-	if (m_pPlayer->HasShield())
-	{
-		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
-		{
-			Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgun");
-		}
-	}
+	// stub
 }
 
 void CBasePlayerWeapon::EjectBrassLate()
@@ -658,34 +642,7 @@ void CBasePlayerWeapon::EjectBrassLate()
 
 bool CBasePlayerWeapon::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 {
-	if (!m_pPlayer->HasShield())
-		return false;
-
-	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
-	{
-		m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
-		SendWeaponAnim(iDownAnim, UseDecrement() != FALSE);
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgun");
-		m_fMaxSpeed = 250.0f;
-		m_pPlayer->m_bShieldDrawn = false;
-	}
-	else
-	{
-		m_iWeaponState |= WPNSTATE_SHIELD_DRAWN;
-		SendWeaponAnim(iUpAnim, UseDecrement() != FALSE);
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shielded");
-		m_fMaxSpeed = 180.0f;
-		m_pPlayer->m_bShieldDrawn = true;
-	}
-
-	m_pPlayer->UpdateShieldCrosshair((m_iWeaponState & WPNSTATE_SHIELD_DRAWN) != WPNSTATE_SHIELD_DRAWN);
-	m_pPlayer->ResetMaxSpeed();
-
-	m_flNextSecondaryAttack = 0.4f;
-	m_flNextPrimaryAttack = 0.4f;
-	m_flTimeWeaponIdle = 0.6f;
-
-	return true;
+	return false;
 }
 
 void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change)
@@ -807,11 +764,6 @@ BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted)
 
 bool CBasePlayerWeapon::HasSecondaryAttack()
 {
-	if (m_pPlayer->HasShield())
-	{
-		return true;
-	}
-
 	switch (m_iId)
 	{
 	case WEAPON_AK47:
@@ -880,17 +832,6 @@ void CBasePlayerWeapon::ItemPostFrame()
 	if (!(m_pPlayer->pev->button & IN_ATTACK))
 	{
 		m_flLastFireTime = 0;
-	}
-
-	if (m_pPlayer->HasShield())
-	{
-		if (m_fInReload && (m_pPlayer->pev->button & IN_ATTACK2))
-		{
-			SecondaryAttack();
-            m_pPlayer->pev->button &= ~IN_ATTACK2;
-			m_fInReload = FALSE;
-			m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase();
-		}
 	}
 
 	if (m_fInReload && m_pPlayer->m_flNextAttack <= UTIL_WeaponTimeBase())

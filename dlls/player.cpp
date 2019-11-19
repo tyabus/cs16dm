@@ -170,8 +170,7 @@ WeaponStruct g_weaponStruct[ MAX_WEAPONS ] =
 	{ WEAPON_GALIL,		GALIL_PRICE,		CT,			AUTOBUYCLASS_PRIMARY,	AMMO_556MM_PRICE },
 				// TODO: this have bug, the cost of galil $2000, but not $2250
 
-	{ WEAPON_SHIELDGUN,	SHIELDGUN_PRICE,	TERRORIST,		AUTOBUYCLASS_PRIMARY,	0 },
-
+	{ 0, 0,	0, 0, 0 },
 	{ 0, 0, 0, 0, 0 },
 	{ 0, 0, 0, 0, 0 },
 	{ 0, 0, 0, 0, 0 },
@@ -363,7 +362,7 @@ const char *GetCSModelName(int item_id)
 	case WEAPON_AK47:		modelName = "models/w_ak47.mdl"; break;
 	case WEAPON_KNIFE:		modelName = "models/w_knife.mdl"; break;
 	case WEAPON_P90:		modelName = "models/w_p90.mdl"; break;
-	case WEAPON_SHIELDGUN:		modelName = "models/w_shield.mdl"; break;
+	case WEAPON_SHIELDGUN:		break;
 	default:
 		ALERT(at_console, "CBasePlayer::PackDeadPlayerItems(): Unhandled item- not creating weaponbox\n");
 	}
@@ -696,15 +695,6 @@ Vector CBasePlayer::GetGunPosition()
 
 bool CBasePlayer::IsHittingShield(Vector &vecDirection, TraceResult *ptr)
 {
-	if ((m_pActiveItem != NULL && m_pActiveItem->m_iId == WEAPON_C4) || !HasShield())
-		return false;
-
-	if (ptr->iHitgroup == HITGROUP_SHIELD)
-		 return true;
-
-	if (m_bShieldDrawn)
-		UTIL_MakeVectors(pev->angles);
-
 	return false;
 }
 
@@ -726,62 +716,35 @@ void CBasePlayer::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vec
 
 	m_LastHitGroup = ptr->iHitgroup;
 
-	if (bHitShield)
+	switch (ptr->iHitgroup)
 	{
-		flDamage = 0;
-		bShouldBleed = false;
+	case HITGROUP_GENERIC:
+		break;
 
-		if (RANDOM_LONG(0, 1))
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/ric_metal-1.wav", VOL_NORM, ATTN_NORM);
-		else
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/ric_metal-2.wav", VOL_NORM, ATTN_NORM);
-
-		UTIL_Sparks(ptr->vecEndPos);
-
-		pev->punchangle.x = flDamage * RANDOM_FLOAT(-0.15, 0.15);
-		pev->punchangle.z = flDamage * RANDOM_FLOAT(-0.15, 0.15);
-
-		if (pev->punchangle.x < 4)
-			pev->punchangle.x = -4;
-
-		if (pev->punchangle.z < -5)
-			pev->punchangle.z = -5;
-
-		else if (pev->punchangle.z > 5)
-			pev->punchangle.z = 5;
-	}
-	else
+	case HITGROUP_HEAD:
 	{
-		switch (ptr->iHitgroup)
+        	//UTIL_ScreenFade(pAttacker, Vector(200, 0, 0), 0.5, 1, 120, 0);
+		if (m_iKevlar == ARMOR_TYPE_HELMET)
 		{
-		case HITGROUP_GENERIC:
-			break;
+			bShouldBleed = false;
+			bShouldSpark = true;
+		}
 
-		case HITGROUP_HEAD:
+		flDamage *= 4;
+		if (bShouldBleed)
 		{
-            //UTIL_ScreenFade(pAttacker, Vector(200, 0, 0), 0.5, 1, 120, 0);
-			if (m_iKevlar == ARMOR_TYPE_HELMET)
-			{
-				bShouldBleed = false;
-				bShouldSpark = true;
-			}
-
-			flDamage *= 4;
-			if (bShouldBleed)
-			{
-				pev->punchangle.x = flDamage * -0.5;
+			pev->punchangle.x = flDamage * -0.5;
 
 				if (pev->punchangle.x < -12)
 					pev->punchangle.x = -12;
 
-				pev->punchangle.z = flDamage * RANDOM_FLOAT(-1, 1);
+			pev->punchangle.z = flDamage * RANDOM_FLOAT(-1, 1);
 
 				if (pev->punchangle.z < -9)
 					pev->punchangle.z = -9;
 
 				else if (pev->punchangle.z > 9)
 					pev->punchangle.z = 9;
-			}
 			break;
 		}
 		case HITGROUP_CHEST:
@@ -985,12 +948,6 @@ int CBasePlayer::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, flo
 	if (bitsDamageType & (DMG_EXPLOSION | DMG_BLAST | DMG_FALL))
 		m_LastHitGroup = HITGROUP_GENERIC;
 
-	else if (m_LastHitGroup == HITGROUP_SHIELD && (bitsDamageType & DMG_BULLET))
-		return 0;
-
-	if (HasShield())
-		flShieldRatio = 0.2;
-
 	if (m_bIsVIP)
 		flRatio *= 0.5;
 
@@ -1093,14 +1050,6 @@ int CBasePlayer::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, flo
 						continue;
 
 					bool killedByHumanPlayer = (!pPlayer->IsBot() && pPlayer->pev == pevAttacker && pPlayer->m_iTeam != m_iTeam);
-
-					if (killedByHumanPlayer)
-					{
-						if (TheCareerTasks != NULL)
-						{
-							TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayer->HasShield(), pPlayer);
-						}
-					}
 				}
 			}
 		}
@@ -1326,14 +1275,6 @@ int CBasePlayer::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, flo
 					continue;
 
 				bool killedByHumanPlayer = (!pPlayer->IsBot() && pPlayer->pev == pevAttacker && pPlayer->m_iTeam != m_iTeam);
-
-				if (killedByHumanPlayer)
-				{
-					if (TheCareerTasks != NULL)
-					{
-						TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayer->HasShield(), pPlayer);
-					}
-				}
 			}
 		}
 	}
@@ -1805,12 +1746,6 @@ void RescueZoneIcon_Set(CBasePlayer *player)
 		WRITE_BYTE(160);
 		WRITE_BYTE(0);
 	MESSAGE_END();
-
-	if (player->m_iTeam == CT && !(player->m_flDisplayHistory & DHF_IN_RESCUE_ZONE))
-	{
-		player->m_flDisplayHistory |= DHF_IN_RESCUE_ZONE;
-		player->HintMessage("#Hint_hostage_rescue_zone", TRUE); // TODO: send also for dead the players?
-	}
 }
 
 void RescueZoneIcon_Clear(CBasePlayer *player)
@@ -2274,9 +2209,6 @@ void CBasePlayer::SetAnimation(PLAYER_ANIM playerAnim)
 	if (!pev->modelindex)
 		return;
 
-	if ((playerAnim == PLAYER_FLINCH || playerAnim == PLAYER_LARGE_FLINCH) && HasShield())
-		return;
-
 	if (playerAnim != PLAYER_FLINCH && playerAnim != PLAYER_LARGE_FLINCH && m_flFlinchTime > gpGlobals->time && pev->health > 0.0f)
 		return;
 
@@ -2596,7 +2528,6 @@ void CBasePlayer::SetAnimation(PLAYER_ANIM playerAnim)
 					animDesired = LookupSequence("head_flinch");
 					break;
 				case HITGROUP_SHIELD:
-					animDesired = 0;
 					break;
 				default:
 					animDesired = LookupSequence("gut_flinch");
@@ -2959,58 +2890,6 @@ NOXREF void CBasePlayer::ThrowWeapon(char *pszItemName)
 			}
 
 			pWeapon = pWeapon->m_pNext;
-		}
-	}
-}
-
-LINK_ENTITY_TO_CLASS(weapon_shield, CWShield);
-
-void CWShield::Spawn()
-{
-	pev->movetype = MOVETYPE_TOSS;
-	pev->solid = SOLID_TRIGGER;
-
-	UTIL_SetSize(pev, g_vecZero, g_vecZero);
-	SET_MODEL(ENT(pev), "models/w_shield.mdl");
-}
-
-void CWShield::Touch(CBaseEntity *pOther)
-{
-	if (!pOther->IsPlayer())
-		return;
-
-	CBasePlayer *pPlayer = (CBasePlayer *)pOther;
-
-	if (pPlayer->pev->deadflag != DEAD_NO)
-		return;
-
-	if (m_hEntToIgnoreTouchesFrom != NULL && pPlayer == (CBasePlayer *)m_hEntToIgnoreTouchesFrom)
-	{
-		if (m_flTimeToIgnoreTouches > gpGlobals->time)
-			return;
-
-		m_hEntToIgnoreTouchesFrom = NULL;
-	}
-
-	if (!pPlayer->m_bHasPrimary)
-	{
-		if (pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ] != NULL && pPlayer->m_rgpPlayerItems[ PISTOL_SLOT ]->m_iId == WEAPON_ELITE)
-			return;
-
-		if (pPlayer->m_pActiveItem)
-		{
-			if (!pPlayer->m_pActiveItem->CanHolster())
-				return;
-		}
-
-		if (!pPlayer->m_bIsVIP)
-		{
-			pPlayer->GiveShield();
-
-			EMIT_SOUND(edict(), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
-			UTIL_Remove(this);
-
-			pev->nextthink = gpGlobals->time + 0.1;
 		}
 	}
 }
@@ -3755,27 +3634,6 @@ bool CanSeeUseable(CBasePlayer *me, CBaseEntity *entity)
 	TraceResult result;
 	Vector eye = me->pev->origin + me->pev->view_ofs;
 
-	if (FClassnameIs(entity->pev, "hostage_entity"))
-	{
-		Vector chest	= entity->pev->origin + Vector(0, 0, HalfHumanHeight);
-		Vector head	= entity->pev->origin + Vector(0, 0, HumanHeight * 0.9);
-		Vector knees	= entity->pev->origin + Vector(0, 0, StepHeight);
-
-		UTIL_TraceLine(eye, chest, ignore_monsters, ignore_glass, me->edict(), &result);
-		if (result.flFraction < 1.0f)
-		{
-			UTIL_TraceLine(eye, head, ignore_monsters, ignore_glass, entity->edict(), &result);
-			if (result.flFraction < 1.0f)
-			{
-				UTIL_TraceLine(eye, knees, ignore_monsters, ignore_glass, entity->edict(), &result);
-				if (result.flFraction < 1.0f)
-				{
-					return false;
-				}
-			}
-		}
-	}
-
 	return true;
 }
 
@@ -3905,16 +3763,7 @@ void CBasePlayer::PlayerUse()
 
 void CBasePlayer::HostageUsed()
 {
-	if (m_flDisplayHistory & DHF_HOSTAGE_USED)
-		return;
-
-	if (m_iTeam == TERRORIST)
-		HintMessage("#Hint_use_hostage_to_stop_him");
-
-	else if (m_iTeam == CT)
-		HintMessage("#Hint_lead_hostage_to_rescue_point");
-
-	m_flDisplayHistory |= DHF_HOSTAGE_USED;
+	return;
 }
 
 void CBasePlayer::Jump()

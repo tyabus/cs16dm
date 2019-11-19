@@ -1201,11 +1201,6 @@ bool CCSBotManager::AddBot(const BotProfile *profile, BotProfileTeamType team)
 
 		HandleMenu_ChooseAppearance(pBot, skin);
 
-		if (IS_DEDICATED_SERVER())
-		{
-			UTIL_DPrintf("Added bot %s to server\n", STRING(pBot->pev->netname));
-		}
-
 		return true;
 	}
 

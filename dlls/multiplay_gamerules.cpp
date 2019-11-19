@@ -273,7 +273,6 @@ void EndRoundMessage(const char *sentence, int event)
 	case ROUND_VIP_ASSASSINATED:
 	case ROUND_TERRORISTS_ESCAPED:
 	case ROUND_TERRORISTS_WIN:
-	case ROUND_HOSTAGE_NOT_RESCUED:
 	case ROUND_VIP_NOT_ESCAPED:
 		team = GetTeam(TERRORIST);
 		// tell bots the terrorists won the round
@@ -287,7 +286,6 @@ void EndRoundMessage(const char *sentence, int event)
 	case ROUND_ESCAPING_TERRORISTS_NEUTRALIZED:
 	case ROUND_BOMB_DEFUSED:
 	case ROUND_CTS_WIN:
-	case ROUND_ALL_HOSTAGES_RESCUED:
 	case ROUND_TARGET_SAVED:
 	case ROUND_TERRORISTS_NOT_ESCAPED:
 		team = GetTeam(CT);
@@ -562,12 +560,6 @@ void CHalfLifeMultiplay::RemoveGuns()
 		((CWeaponBox *)toremove)->Kill();
 
 	toremove = NULL;
-
-	while ((toremove = UTIL_FindEntityByClassname(toremove, "weapon_shield")) != NULL)
-	{
-		toremove->SetThink(&CBaseEntity::SUB_Remove);
-		toremove->pev->nextthink = gpGlobals->time + 0.1;
-	}
 }
 
 void CHalfLifeMultiplay::UpdateTeamScores()
@@ -888,31 +880,7 @@ void CHalfLifeMultiplay::CheckWinConditions()
 
 	// other player's check
 	bool bNeededPlayers = false;
-	/*if (!(scenarioFlags & SCENARIO_BLOCK_NEED_PLAYERS) && NeededPlayersCheck(bNeededPlayers))
 		return;
-
-	// Assasination/VIP scenarion check
-	if (!(scenarioFlags & SCENARIO_BLOCK_VIP_ESCAPRE) && VIPRoundEndCheck(bNeededPlayers))
-		return;
-
-	// Prison escape check
-	if (!(scenarioFlags & SCENARIO_BLOCK_PRISON_ESCAPRE) && PrisonRoundEndCheck(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT, bNeededPlayers))
-		return;
-
-	// Bomb check
-	if (!(scenarioFlags & SCENARIO_BLOCK_BOMB) && BombRoundEndCheck(bNeededPlayers))
-		return;
-
-	// Team Extermination check
-	// CounterTerrorists won by virture of elimination
-	if (!(scenarioFlags & SCENARIO_BLOCK_TEAM_EXTERMINATION) && TeamExterminationCheck(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT, bNeededPlayers))
-		return;
-
-	// Hostage rescue check
-	if (!(scenarioFlags & SCENARIO_BLOCK_HOSTAGE_RESCUE) && HostageRescueRoundEndCheck(bNeededPlayers))*/
-		return;
-
-	// scenario not won - still in progress
 }
 
 void CHalfLifeMultiplay::InitializePlayerCounts(int &NumAliveTerrorist, int &NumAliveCT, int &NumDeadTerrorist, int &NumDeadCT)
@@ -1337,66 +1305,6 @@ bool CHalfLifeMultiplay::TeamExterminationCheck(int NumAliveTerrorist, int NumAl
 
 bool CHalfLifeMultiplay::HostageRescueRoundEndCheck(bool bNeededPlayers)
 {
-    return false;
-	// Check to see if 50% of the hostages have been rescued.
-	CBaseEntity *hostage = NULL;
-	int iHostages = 0;
-
-	// Assume that all hostages are either rescued or dead..
-	bool bHostageAlive = false;
-
-	while ((hostage = UTIL_FindEntityByClassname(hostage, "hostage_entity")) != NULL)
-	{
-		++iHostages;
-
-		// We've found a live hostage. don't end the round
-		if (hostage->pev->takedamage == DAMAGE_YES)
-		{
-			bHostageAlive = true;
-		}
-	}
-
-	// There are no hostages alive.. check to see if the CTs have rescued atleast 50% of them.
-	if (!bHostageAlive && iHostages > 0)
-	{
-		if (m_iHostagesRescued >= (iHostages * 0.5))
-		{
-			Broadcast("ctwin");
-			m_iAccountCT += REWARD_ALL_HOSTAGES_RESCUED;
-
-			if (!bNeededPlayers)
-			{
-				++m_iNumCTWins;
-				// Update the clients team score
-				UpdateTeamScores();
-			}
-
-			EndRoundMessage("#All_Hostages_Rescued", ROUND_ALL_HOSTAGES_RESCUED);
-
-			// tell the bots all the hostages have been rescued
-			if (TheBots != NULL)
-			{
-				TheBots->OnEvent(EVENT_ALL_HOSTAGES_RESCUED);
-			}
-
-			if (IsCareer())
-			{
-				if (TheCareerTasks != NULL)
-				{
-					TheCareerTasks->HandleEvent(EVENT_ALL_HOSTAGES_RESCUED);
-				}
-			}
-
-			TerminateRound(5, WINSTATUS_CTS);
-			if (IsCareer())
-			{
-				QueueCareerRoundEndMenu(5, WINSTATUS_CTS);
-			}
-
-			return true;
-		}
-	}
-
 	return false;
 }
 
@@ -1552,17 +1460,6 @@ void CHalfLifeMultiplay::CheckMapConditions()
 
 void CHalfLifeMultiplay::RestartRound()
 {
-	// tell bots that the round is restarting
-	/*if (TheBots != NULL)
-	{
-		TheBots->RestartRound();
-	}*/
-
-	/*if (g_pHostages != NULL)
-	{
-		g_pHostages->RestartRound();
-	}*/
-
 	++m_iTotalRoundsPlayed;
 	ClearBodyQue();
 
@@ -1805,9 +1702,6 @@ void CHalfLifeMultiplay::RestartRound()
 			m_iAccountTerrorist += m_iLoserBonus;
 		}
 	}
-
-	// Update CT account based on number of hostages rescued
-	m_iAccountCT += m_iHostagesRescued * REWARD_RESCUED_HOSTAGE;
 
 	// Update individual players accounts and respawn players
 
@@ -2409,8 +2303,6 @@ void CHalfLifeMultiplay::Think()
 	{
 		if (m_fCareerMatchMenuTime + 10 <= gpGlobals->time || !IsBotSpeaking())
 		{
-			UTIL_CareerDPrintf("Ending career match...one team has won the specified number of rounds\n");
-
 			MESSAGE_BEGIN(MSG_ALL, gmsgCZCareer);
 				WRITE_STRING("MATCH");
 				WRITE_LONG(m_iNumCTWins);
@@ -3173,22 +3065,7 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer *pPlayer)
 		pPlayer->m_afButtonReleased = 0;
 	}
 
-    /*if (!pPlayer->m_bCanShoot && !IsFreezePeriod())
-    {
-        pPlayer->m_bCanShoot = true;
-    }*/
-
-    pPlayer->m_bCanShoot = true;
-
-    if (pPlayer->m_pActiveItem && pPlayer->m_pActiveItem->IsWeapon())
-	{
-		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem->GetWeaponPtr());
-
-		if (pWeapon->m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
-		{
-			pPlayer->m_bCanShoot = false;
-		}
-	}
+    	pPlayer->m_bCanShoot = true;
 
 	if (pPlayer->m_iMenu != Menu_ChooseTeam && pPlayer->m_iJoiningState == SHOWTEAMSELECT)
 	{
