@@ -144,7 +144,6 @@ LOCAL_SRC_FILES := \
 	../game_shared/bot/nav_path.cpp \
 	../game_shared/shared_util.cpp \
 	../game_shared/voice_gamemgr.cpp \
-	../pm_shared/pm_debug.cpp \
 	../pm_shared/pm_math.cpp \
 	../pm_shared/pm_shared.cpp \
 	../public/MemPool.cpp \

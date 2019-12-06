@@ -1416,9 +1416,6 @@ void CBasePlayer::RemoveWeapons()
 
     pev->weapons &= ~WEAPON_ALLWEAPONS;
     GiveNamedItem("weapon_knife");
-    GiveNamedItem("weapon_smokegrenade");
-
-
 }
 
 const char *primaryweaponlist[18] =
