@@ -1498,8 +1498,6 @@ void CBasePlayer::GiveDefaultItems()
     }
 
     GiveNamedItem("weapon_knife");
-    GiveNamedItem("weapon_smokegrenade");
-
 }
 
 void CBasePlayer::RemoveAllItems(BOOL removeSuit)
